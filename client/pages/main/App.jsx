@@ -11,7 +11,6 @@ import Stream from '../../pages/profile/tracks/Stream.jsx'
 import Modal from '../../components/Modal.jsx'
 import NavBar from '../../components/NavBar.jsx'
 import Player from '../../components/Player.jsx'
-import DiggazCoinHive from '../../components/CoinHive.jsx'
 
 import Profile from '../profile/index.jsx'
 import Welcome from '../hottracks/Welcome.jsx'
@@ -57,10 +56,6 @@ class App extends Component {
     // TODO : add a Settings page
     //        redirect to /stream if logged from /
     //        else to ?
-
-    const coinHive = this.props.isAuth
-                     ? <DiggazCoinHive username={this.props.username} />
-                     : ''
 
     return (<div id='app'>
         <Router>
