@@ -1,0 +1,67 @@
+{
+  "name": "diggaz",
+  "private": true,
+  "scripts": {
+    "start": "meteor run",
+    "lint": "standard --verbose | snazzy",
+    "lintfix": "standard --verbose --fix"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "ignore": [
+      "/dist/*",
+      "/tmp/*",
+      "/node_modules"
+    ]
+  },
+  "dependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-runtime": "^6.26.0",
+    "bcrypt": "^1.0.3",
+    "cheerio": "^1.0.0-rc.2",
+    "cookie": "^0.3.1",
+    "history": "^4.6.3",
+    "md5": "^2.2.1",
+    "meteor-node-stubs": "~0.2.4",
+    "mousetrap": "^1.6.1",
+    "node-fetch": "^1.7.3",
+    "node-soundcloud": "0.0.6",
+    "react": "^16.0.0",
+    "react-addons-pure-render-mixin": "^15.6.0",
+    "react-autocomplete": "^1.7.1",
+    "react-bootstrap": "^0.31.3",
+    "react-coin-hive": "^1.0.2",
+    "react-dom": "^16.0.0",
+    "react-player": "git@github.com:CookPete/react-player.git#v1.0.0-beta.4",
+    "react-redux": "^5.0.6",
+    "react-router": "^4.1.2",
+    "react-router-dom": "^4.2.2",
+    "redis": "^2.8.0",
+    "redux": "^3.7.2",
+    "redux-form": "^7.0.4",
+    "redux-thunk": "^2.2.0",
+    "soundcloud-nodejs-api-wrapper": "^0.3.2",
+    "youtube-api": "^2.0.9"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.0.1",
+    "babel-jest": "^21.2.0",
+    "eslint": "^4.9.0",
+    "jest": "^21.2.1",
+    "jest-cli": "^21.2.1",
+    "react-test-renderer": "^16.0.0",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.3"
+  },
+  "jest": {
+    "testMatch": [
+      "**/.__tests__/**/*.js?(x)",
+      "**/?(*.)(spec|test).js?(x)"
+    ],
+    "modulePathIgnorePatterns": [
+      "node_modules",
+      "config"
+    ]
+  }
+}

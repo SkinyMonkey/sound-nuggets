@@ -1,0 +1,49 @@
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+
+import { Button, ButtonGroup, FormControl, FormGroup, ControlLabel } from 'react-bootstrap'
+
+import { Playlists } from '../../imports/api/playlists.js'
+
+class AddPlaylist extends Component {
+  constructor (props, context) {
+    super(props, context)
+
+    this.state = {
+      playlistName: ''
+    }
+  }
+
+  onNameChange (event) {
+    this.setState({ playlistName: event.target.value })
+  }
+
+  onSubmitName (event) {
+    event.preventDefault()
+    Playlists.insert({owner: this.props.session.currentUser._id,
+      name: this.state.playlistName,
+      isDefault: false})
+    this.props.closeModal()
+  }
+
+  render () {
+    return <form onSubmit={this.onSubmitName.bind(this)}>
+      <FormGroup>
+        <ControlLabel>Write the name of the new playlist</ControlLabel>
+        <FormControl type='text' onChange={this.onNameChange.bind(this)}
+          value={this.state.playlistName} />
+      </FormGroup>
+
+      <ButtonGroup>
+        <Button type='submit' bsStyle='success'>Add Playlist</Button>
+        <Button onClick={this.props.closeModal}>Cancel</Button>
+      </ButtonGroup>
+    </form>
+  }
+}
+
+AddPlaylist.propTypes = {
+  session: PropTypes.object.isRequired
+}
+
+export default AddPlaylist
