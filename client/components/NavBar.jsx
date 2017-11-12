@@ -1,10 +1,26 @@
 import React from 'react'
-import { Meteor } from 'meteor/meteor'
+import { connect } from 'react-redux'
+
 import { withTracker } from 'meteor/react-meteor-data'
 
 import { Navbar, Nav, NavItem, MenuItem, DropdownButton, ButtonGroup, Button } from 'react-bootstrap'
 
+import modalActions from '../actions/modal.js'
+import AddIssue from '../partials/AddIssue.jsx'
+
 const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1)
+
+const SendBugNavItem = connect(null, modalActions)((props) => {
+  return <NavItem key={'issue'}
+    onClick={() => {
+      props.openModal({
+        title: 'Send an issue',
+        partial: AddIssue,
+      })
+    }}>
+    Found a bug?
+  </NavItem>
+})
 
 const Bar = ({profileId, session, history}) => {
   const isAuth = session.isAuth
@@ -57,6 +73,9 @@ const Bar = ({profileId, session, history}) => {
             </NavItem>
             })
         }
+        </Nav>
+        <Nav>
+          <SendBugNavItem/>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
