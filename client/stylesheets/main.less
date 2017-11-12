@@ -1,0 +1,398 @@
+@font-family: 'AvenirNext-Regular', Helvetica, Arial, Sans-serif;
+@font-family-bold: 'AvenirNext-DemiBold', Helvetica, Arial, Sans-serif;
+@background-color: #EFEFEF;
+@font-color: #181B1F;
+@selected-color: #3177AF;
+@control-color: #CBCED2;
+@input-color: #757575;
+@default-cover-color: #DDD;
+
+// Modal
+#generic-modal * {
+  border-radius: 0 !important;
+
+  .small-danger {
+    border: 1px solid #c9302c;
+    color: #c9302c;
+    background-color: white;
+  }
+
+  .small-danger:hover {
+    border: 1px solid #c9302c;
+    color: white;
+    background-color: #c9302c;
+  }
+}
+
+#app * {
+  border-radius: 0;
+}
+
+#app .img-circle {
+  border-radius: 50%;
+}
+
+.popover {
+  border-radius: 0;
+  .popover-content {
+    padding: 0;
+  }
+}
+
+// input
+// button
+// dropdown
+// link
+// h1 etc
+
+// All the app
+#app {
+  overflow :hidden;
+  -webkit-font-smoothing: antialiased;
+
+  // General definitions
+  list-style-type: none;
+
+  color: @font-color;
+	font-family: @font-family;
+  background-color: @background-color;
+
+  h1, h2, h3, h4, h5, h6, strong, b {
+    font-family: @font-family-bold;
+    font-weight: bold;
+  }
+
+  input {
+    height: 32px;
+    background-color: @background-color;
+    font-size:13px;
+    color: @input-color;
+    outline: none;
+  }
+
+  input:focus {
+    background-color: white;
+    color: @font-color;
+  }
+
+  // Bootstrap overwriting
+  .btn {
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .dropdown-menu {
+    font-size: 12px;
+  }
+
+  .panel-heading {
+    background-color: white;
+  }
+
+  .panel-body {
+    padding: 0px;
+  }
+
+  .media {
+    margin-top: 0px;
+  }
+
+  .media-body {
+    vertical-align: middle;
+  }
+
+  // Used by the Container wrapper, with .container
+  .page-container {
+    margin-top: 78px;
+  }
+}
+
+// Login, Profile etc
+#main {
+}
+
+#session {
+  margin-top: 10%;
+  margin-left: 35%;
+  width: 420px;
+
+  .panel {
+    padding: 15px;
+  }
+
+  .session-input {
+    margin-top: 5px;
+  }
+
+  .session-button {
+    margin-top: 10px;
+  }
+
+  #session-bottom {
+    margin-top: 15px;
+  }
+
+  .btn-facebook {
+    background-color: #5B7AC0;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    background: #3c599b url(img/fb-icon-button.png) no-repeat 6px 4px;
+    padding-left: 32px;
+    height: 32px;
+  }
+
+  .btn-facebook:hover {
+    background-color: #62A1D3;
+  }
+
+  .row {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+}
+
+// Navbar
+#navbar {
+  background-color: white;
+  border-bottom: 1px solid #cecece;
+	color: #474747;
+	font-size: 13px;
+
+  a {
+	  color: #474748;
+	  font-family: @font-family-bold;
+  }
+
+  .navbar-brand {
+    width: 143px;
+  }
+
+  .onit {
+    height: 50px;
+    border-bottom: 2px solid @selected-color;
+    a {
+      color: @selected-color;
+    }
+  }
+
+  #profile-dropdown {
+    button {
+      float: left;
+      padding-top: 5px;
+      padding-left: 5px;
+    }
+
+    strong {
+      padding-top: 2px;
+      float: left;
+      position: relative;
+      max-width: 70px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+  }
+
+  #settings-dropdown {
+	  border: 0;
+  }
+
+  #search-autocomplete {
+    width: 383px;
+ }
+}
+
+.search-item-true {
+  background-color: #3177AF;
+  color: white;
+  margin-left: 10px;
+}
+
+.search-item-false {
+  background-color: white;
+  margin-left: 10px;
+}
+ 
+.search-icon {
+  background-image: url(/img/icon-search-general.png);
+  background-repeat: no-repeat;
+  background-position: 7px 50%;
+  padding: 0 5px 0 28px;
+}
+
+input#search-autocomplete:extend(.search-icon) {
+}
+
+#menu-tracks {
+  position: absolute;
+  width: 383px;
+  overflow: scroll;
+}
+
+// Search wrapper
+input#search-wrapper:extend(.search-icon) {
+  width: 80%;
+}
+
+// Loading
+#loading {
+  font-size: 30px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#load-more {
+  width: 320px;
+  height: 36px;
+  color: #CBCED2;
+  border-color: #CBCED2;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// Profile
+#page {
+  margin-bottom: 50px;
+
+  .panel-body {
+    margin-bottom: 20px;
+  }
+}
+
+#profile {
+  margin-top: 51px;
+  background-color: #ddd;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#profile-header {
+  color: white;
+  font-size: 18px;
+  line-height: 30px;
+
+  .img-circle {
+    border: 3px solid;
+  }
+
+  .btn {
+    color: white;
+    border-color: white;
+    outline:none;
+    background-color: Transparent;
+    background-repeat:no-repeat;
+  }
+}
+
+// Side menu
+#sidemenu {
+  box-shadow: 0 1px 1px rgba(0,0,0,.05);
+  border: 1px solid #ddd;
+  height: 213px;
+  margin-left: 18%;
+
+  .profile-menu-entry {
+    outline: none;
+    height: 54px;
+    font-size: 16px;
+    font-family: @font-family-bold;
+
+    border: none;
+  }
+
+  .onit {
+    outline: none;
+    height: 54px;
+    font-size: 16px;
+ 
+    padding-left: 13px; // 15px - 2px of border
+    border-left: 2px solid #3177AF;
+    border-right: 0px;
+    border-top: 0px;
+    border-bottom: 0px;
+    color: #7CB1DA;
+  }
+}
+
+.control {
+  color: #CBCED2;
+}
+
+.control:hover {
+  color: #337ab7;
+}
+
+// Tracks
+#tracks {
+  .media {
+    padding: 15px;
+  }
+
+  .onit {
+    border-left: 2px solid #3177AF;
+    padding-left: 13px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-right: 15px;
+  }
+
+  .track h4 {
+    font-size: 14px;
+  }
+
+  .track a {
+    font-weight: bold;
+    font-family: @font-family-bold;
+  }
+
+  .track {
+    font-size: 13px;
+
+    .status {
+      width: 36px;
+      height: 36px;
+      margin-top: 40px;
+      margin-left: 36px;
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .play:extend(.status) {
+      background: url('/img/icon-post-play.png') no-repeat center center;
+    }
+
+    .pause:extend(.status) {
+      background: url('/img/icon-post-pause.png') no-repeat center center;
+    }
+  }
+}
+
+#playlists {
+  .media {
+    padding: 15px;
+  }
+}
+
+[id$=_playlist_dropdown] {
+    width: 100px;
+    text-overflow: ellipsis;
+}
+
+// Follows
+#follows {
+  .media {
+    padding: 15px;
+  }
+}
+
+// Hot tracks
+#welcome {
+  margin-top: 51px;
+}
+
+// Player
+@import url("./player.less");
