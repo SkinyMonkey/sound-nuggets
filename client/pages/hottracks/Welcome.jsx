@@ -11,7 +11,7 @@ export class Welcome extends Component {
   render () {
     return <div className='page-container container'>
       <Panel id='welcome'>
-        <h3>Welcome to Diggaz, an openwhyd client and clone</h3>
+        <h3>Welcome to sound-nuggets, an openwhyd frontend</h3>
         <HotTracks {...this.props} />
       </Panel>
     </div>

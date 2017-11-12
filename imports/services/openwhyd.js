@@ -20,7 +20,7 @@ const HEADERS = {
   'Accept-Encoding': 'gzip, deflate, br',
   'Accept-Language': 'en-US,enq=0.8,frq=0.6',
   'Upgrade-Insecure-Requests': '1',
-  'User-Agent': 'Diggaz-frontend',
+  'User-Agent': 'sound-nuggets-frontend',
   'Content-Type': 'application/x-www-form-urlencoded charset=UTF-8',
   'Accept': 'text/html,application/xhtml+xml,application/xmlq=0.9,image/webp,image/apng,*/*q=0.8',
   'Cache-Control': 'max-age=0',

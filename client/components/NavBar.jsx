@@ -4,8 +4,6 @@ import { withTracker } from 'meteor/react-meteor-data'
 
 import { Navbar, Nav, NavItem, MenuItem, DropdownButton, ButtonGroup, Button } from 'react-bootstrap'
 
-import Search from './Search.jsx'
-
 const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1)
 
 const Bar = ({profileId, session, history}) => {
@@ -40,7 +38,7 @@ const Bar = ({profileId, session, history}) => {
     <Navbar fixedTop collapseOnSelect id='navbar'>
       <Navbar.Header>
         <Navbar.Brand>
-          Diggaz
+          Demo
         </Navbar.Brand>
         <Navbar.Toggle />
       </Navbar.Header>
@@ -60,32 +58,6 @@ const Bar = ({profileId, session, history}) => {
             })
         }
         </Nav>
-        <Navbar.Form pullLeft>
-          <Search thirdPartyApis={isAuth} history={history} session={session} />
-        </Navbar.Form>
-        <Navbar.Form pullRight>
-          { !isAuth
-          ? <Button onClick={() => history.push('/login')}>Login</Button>
-          : <div>
-            <ButtonGroup id='profile-dropdown'>
-              <Button onClick={() => history.push('/profile/' + userId + '/tracks')} >
-                <div className='img-circle' style={buttonAvatarStyle} alt='User avatar' />
-                <strong>{profile.username}</strong>
-              </Button>
-              <DropdownButton title='' id='navbar-profile'>
-                <MenuItem eventKey='playlists' onClick={() => { history.push('/profile/' + userId + '/playlists') }}>Playlists</MenuItem>
-              </DropdownButton>
-            </ButtonGroup>
-
-            <DropdownButton title={<span className='oi oi-cog' />} id='settings-dropdown'>
-              <MenuItem eventKey='invite-friends'>Invite Friends</MenuItem>
-              <MenuItem eventKey='settings'>Settings</MenuItem>
-              <MenuItem eventKey='logout' onClick={() => Meteor.logout()}>Logout</MenuItem>
-            </DropdownButton>
-
-          </div>
-        }
-        </Navbar.Form>
       </Navbar.Collapse>
     </Navbar>
   )
