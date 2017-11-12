@@ -127,7 +127,7 @@ class Player extends Component {
       partial: AddTrack,
       item: {
         ...this.props.track,
-        provider: 'diggaz'
+        provider: 'sound-nuggets'
       }})
   }
 

@@ -25,7 +25,7 @@ class AddTrack extends Component {
   onTrackSubmit (event) {
     event.preventDefault()
 
-    if (this.props.item.provider === 'diggaz') {
+    if (this.props.item.provider === 'sound-nuggets') {
       addTrackFromUser(this.props.session
                       , this.state.playlistId
                       , this.props.item)
