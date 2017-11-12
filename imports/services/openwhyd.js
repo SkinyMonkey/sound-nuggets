@@ -132,13 +132,6 @@ const eIdToURL = (spliteid) => {
   return eidTable[provider] + spliteid.slice(2).join('/')
 }
 
-const getUrl = (eId) => {
-	if (eId.startsWith('/yt/')) {
-		return 'https://www.youtube.com/watch?v=' + eId.split('/yt/')[1]
-	}
-	return ''
-}
-
 const getProvider = (eId) => {
 	if (eId.startsWith('/yt/')) {
 		return 'youtube'
@@ -190,7 +183,7 @@ const convertTrack = (openwhydTrack) => {
 		playlist: openwhydTrack.pl ? openwhydTrack.pl.id : '',
 		playlistName: openwhydTrack.pl ? openwhydTrack.pl.name : '',
 		name: openwhydTrack.name,
-		url: getUrl(openwhydTrack.eId),
+		url: eIdToURL(openwhydTrack.eId.split('/')),
 		provider: getProvider(openwhydTrack.eId),
 		image: openwhydTrack.img,
 		originalOwner : null,
