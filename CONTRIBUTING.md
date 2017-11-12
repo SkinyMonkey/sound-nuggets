@@ -1,4 +1,4 @@
-###Use git flow!
+### Use git flow!
 
 To create your branches
 
@@ -19,7 +19,7 @@ To:
 - fix a bug
 -> use git flow feature start and finish
 
-###Commit Subjects
+### Commit Subjects
 
 Please use one of the following prefixes in your commit subject:
 
@@ -32,9 +32,27 @@ And keep in mind this simple rule for your commit message :
 
 If applied, what is this commit doing to the code
 
-###Development
+### Linting
+
+Before pushing, do a safety commit and please use linting with
+
+```yarn run lint```
+
+You can try to use this commande to automatically fix some of the issues:
+
+```yarn run lintfix```
+
+And the scripts in scripts for some more auto clean up
+
+If the linting is going wrong please contact me so I can help you or do some cleanup on my side.
+
+### Development
 
 Install the last meteor release
 
 Use yarn to install the packages
 Use the meteor command and you should be ready to go!
+
+### Testing
+
+Is coming, it's still on the older repo
