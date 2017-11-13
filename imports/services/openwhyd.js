@@ -459,7 +459,7 @@ if (Meteor.isServer) {
 
     'openwhyd.profile.tracks.hot.get': (limit, genre) => {
       const url = genre ?
-                  `${API_URL}/hot/${genre}?format=json` :
+                  `${API_URL}/hot/${genre}?format=json&limit={$limit}` :
                   `${API_URL}/hot?format=json&limit=${limit}`
 
       return get(url)

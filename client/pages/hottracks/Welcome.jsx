@@ -7,6 +7,9 @@ import HotTracks from './HotTracks.jsx'
 
 // TODO : wrap cleanly into a generic Container element
 //        -> fix CSS
+
+// TODO : get title out?
+//        change the component name
 export class Welcome extends Component {
   render () {
     const panelTitle = (

@@ -33,3 +33,4 @@ scripts/venv
 scripts/.migrations
 
 .deploy/*.settings.json
+.deploy/development/*.settings.json

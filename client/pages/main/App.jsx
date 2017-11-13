@@ -65,6 +65,7 @@ class App extends Component {
             <Route path='/register' component={RedirectIfAuthenticated(Register, this.props)} />
             <Route path='/profile/:profileId' component={MainWithNavBar(Profile, this.props)} />
             <Route path='/welcome' component={RedirectIfAuthenticated(MainWithNavBar(Welcome), this.props)} />
+            <Route path='/welcome/:genre' component={RedirectIfAuthenticated(MainWithNavBar(Welcome), this.props)} />
             <Route path='/' exact component={RedirectIfAuthenticated(MainWithNavBar(Welcome), this.props)} />
             <Route path='*' component={RedirectIfAuthenticated(MainWithNavBar(Welcome), this.props)} />
           </Switch>
