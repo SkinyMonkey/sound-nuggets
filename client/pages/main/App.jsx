@@ -1,19 +1,18 @@
 import React, { Component } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
 
-import { Meteor } from 'meteor/meteor'
-import { withTracker } from 'meteor/react-meteor-data'
-
-import { Playlists } from '../../../imports/api/playlists.js'
-
+import sessionActions from '../../actions/session.js'
+import withMethodData from '../../components/withMethodData.jsx'
 import Authenticated from '../../components/Authenticated.jsx'
-import Stream from '../../pages/profile/tracks/Stream.jsx'
+
 import Modal from '../../components/Modal.jsx'
 import NavBar from '../../components/NavBar.jsx'
 import Player from '../../components/Player.jsx'
 
 import Profile from '../profile/index.jsx'
 import Welcome from '../hottracks/Welcome.jsx'
+import Stream from '../../pages/profile/tracks/Stream.jsx'
 import Login from '../session/Login.jsx'
 import Register from '../register/index.jsx'
 
@@ -52,11 +51,17 @@ class App extends Component {
     console.error('Error:' + __filename + ' ' + error, info)
   }
 
+	componentWillMount() {
+		// resume session
+		this.props.resume()
+	}
+
   render () {
     // TODO : add a Settings page
     //        redirect to /stream if logged from /
     //        else to ?
 
+    console.log('PROPS:', this.props)
     return (<div id='app'>
         <Router>
           <Switch>
@@ -80,37 +85,13 @@ class App extends Component {
 App.propTypes = {
 }
 
-/*
-// ?? Replace by a redux connect?
-// would be cleaner than this global state and
-// would avoid calling the API a second time to get this data
 // could wrap the call to the API so we know when the request is pending and
-// when it's resolved
-export default withMethodData((props, done) => {
- const cookie = document.cookie
-
- if (cookie) {
-  return Meteor.call('openwhyd.user.current.get', cookie, done)
- }
-
- done({})
-})(App)
-*/
-
-export default withTracker(() => {
-  const currentUser = Meteor.user()
-
-  let defaultPlaylist = {}
-  if (currentUser !== null) {
-    defaultPlaylist = Playlists.findOne({owner: Meteor.userId(), isDefault: true})
-  }
-
+// when it's resolved -> loading
+// user is set in state on login
+const mapStateToProps = (state) => {
   return {
-    pendingAuthOperation: Meteor.loggingIn() || Meteor.loggingOut(),
-    currentUser,
-    username: (currentUser && currentUser.profile.username) || '',
-    defaultPlaylist,
-    isAuth: currentUser !== null && currentUser !== undefined,
-    openwhydId: currentUser && currentUser.openwhyd && currentUser.openwhyd._id
+    ...state.session
   }
-})(App)
+}
+
+export default connect(mapStateToProps, sessionActions)(App)
