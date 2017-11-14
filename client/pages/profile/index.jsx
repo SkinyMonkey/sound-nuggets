@@ -1,11 +1,10 @@
 import React from 'react'
-import { Meteor } from 'meteor/meteor'
 import { Switch, Route, Redirect } from 'react-router-dom'
-import { withTracker } from 'meteor/react-meteor-data'
 
 import { Col } from 'react-bootstrap'
 
 import Authenticated from '../../components/Authenticated'
+import withMethodData from '../../components/withMethodData.jsx'
 
 import ProfileSideMenu from './SideMenu'
 
@@ -31,10 +30,10 @@ const Profile = ({ session, match, history, location, profile }) => {
   const SessionWrapper = SessionPropsWrapper(session, profile)
 
   return <div className='mainAppContainer'>
-    <ProfileHeader profile={profile} session={session} />
+    <ProfileHeader session={session} profile={profile} />
     <div className='container'>
       <Col md={3} >
-        <ProfileSideMenu profileId={profileId} history={history} location={location} />
+        <ProfileSideMenu profileId={profileId} history={history} location={location} stats={profile.stats} />
       </Col>
 
       <Col md={7} >
@@ -64,15 +63,11 @@ const Profile = ({ session, match, history, location, profile }) => {
   </div>
 }
 
-export default withTracker(({ match, session }) => {
+// TODO : use state instead?
+const userFromAPI = withMethodData(({ match }, done) => {
   const profileId = match.params.profileId
 
-  // TODO : replace by a method call?
-  const profile = Meteor.users.findOne({ _id: profileId }, { fields: {profile: true}}) || { profile : {} }
+  Meteor.call('openwhyd.profile.user.get', profileId, done);
+})
 
-  return {
-    profile,
-    profileId,
-    session
-  }
-})(Profile)
+export default userFromAPI(Profile)

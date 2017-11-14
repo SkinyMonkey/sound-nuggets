@@ -2,6 +2,8 @@ import fetch from 'node-fetch'
 import md5 from 'md5'
 //import redis from '../server/redis.js'
 
+if (Meteor.isServer) {
+
 const API_URL = 'https://openwhyd.org'
 
 /*
@@ -81,15 +83,25 @@ const emailLogin = (email, password) => {
    md5: md5(password),
    includeUser: true
  })
- .then((result) => result.json())
- .then((json) => {
-  redis.set(json._id, result.headers.get('set-cookie'))
-  return json
+ .then((result) => {
+	return result.json()
+ 							 .then((json) => {
+                if (json.user) {
+                  return {
+                    currentUser: {
+                      _id: json.user._id,
+                      username: json.user.name,
+                      image: `${API_URL}${json.user.img}`
+                    },
+                    username: json.user.name,
+                    defaultPlaylist: {}, //TODO ??
+ 							      cookie: result.headers.get('set-cookie'),
+                  }
+                }
+ 							  return { error: json.error }
+ 							 })
  })
- .catch((e) => {
-   console.error(e)
-   return false
- })
+ .catch(console.error)
 }
 
 const facebookLogin = (facebookId, facebookToken) => {
@@ -278,228 +290,240 @@ const getUser = (profileId) => {
             .catch(console.error)
 }
 
-if (Meteor.isServer) {
-  Meteor.methods({
-    'openwhyd.session.valid': (userId) => {
-      return new Promise((resolve, reject) => {
-        redis.get(userId, (err, reply) => {
-          if (err) return reject(err)
-          if (!reply ||
-              cookie.parse(reply).date < Date.now())
-            return resolve(false)
-          return resolve(true)
-        })
+Meteor.methods({
+  'openwhyd.session.valid': (userId) => {
+    return new Promise((resolve, reject) => {
+      redis.get(userId, (err, reply) => {
+        if (err) return reject(err)
+        if (!reply ||
+            cookie.parse(reply).date < Date.now())
+          return resolve(false)
+        return resolve(true)
       })
-      .catch(console.error)
-    },
+    })
+    .catch(console.error)
+  },
 
-    'openwhyd.login.email': (email, password) => {
-      emailLogin(email, password)
-        .then(() => {
-          
-        })
-        .catch(console.error)
-    },
+  'openwhyd.login.email': (email, password) => {
+    return emailLogin(email, password)
+  },
 
-    'openwhyd.login.facebook': (facebookId) => {
-      const url = `${API_URL}/facebookLogin`
+  'openwhyd.login.facebook': (facebookId) => {
+    const url = `${API_URL}/facebookLogin`
 
-      return openwhydRequest(login_url, {
-              ajax: true,
-              fbUid: user.services.facebook.id,
-              fbAccessToken: user.services.facebook.accessToken,
-              includeUser: true
-      })
-      .then((result) => {
-      })
-      .catch((e) => {
-        console.error(e)
-        return false
-      })
-    },
+    return get(login_url, {
+            ajax: true,
+            fbUid: user.services.facebook.id,
+            fbAccessToken: user.services.facebook.accessToken,
+            includeUser: true
+    })
+    .then((result) => {
+    })
+    .catch((e) => {
+      console.error(e)
+      return false
+    })
+  },
 
-		'openwhyd.user.current.get': (cookie) => {
-  		const url = `${API_URL}/api/user`
+	'openwhyd.logout': (cookie) => {
+		const url = `${API_URL}/login?action=logout&ajax=true&format=true`
 
-  		return getWithCookie(url, cookie)
-            		.then((result) => result.json())
-  		          .then((json) => {
-									return {
-                    currentUser: {
-                      _id: json._id,
-                      username: json.name,
-                      image: json.img
-                    },
+		return getWithCookie(url, cookie)
+								.catch(console.error)
+	},
+
+	'openwhyd.user.current.get': (cookie) => {
+		const url = `${API_URL}/api/user`
+
+		return getWithCookie(url, cookie)
+		          .then((json) => {
+								return {
+                  currentUser: {
+                    _id: json._id,
                     username: json.name,
-                    defaultPlaylist: {}, //TODO ??
-                    isAuth: true,
-									}
-								})
-  		          .catch(console.error)
-		},
+                    image: `${API_URL}${json.img}`
+                  },
+                  username: json.name,
+                  defaultPlaylist: {}, //TODO ??
+                  isAuth: true,
+								}
+							})
+		          .catch(console.error)
+	},
 
-    'openwhyd.profile.tracks.post': postTrack,
-    'openwhyd.profile.tracks.update': postTrack,
+  'openwhyd.profile.tracks.post': postTrack,
+  'openwhyd.profile.tracks.update': postTrack,
 
-    'openwhyd.profile.tracks.delete': (trackId, cookie) => {
-      const trackForm = {
-        action : 'delete',
-        _id: '5a001cbcaa2aa06454be3ef1'
-      }
+  'openwhyd.profile.tracks.delete': (trackId, cookie) => {
+    const trackForm = {
+      action : 'delete',
+      _id: '5a001cbcaa2aa06454be3ef1'
+    }
 
-      return postWithCookie(url, trackForm, cookie)
+    return postWithCookie(url, trackForm, cookie)
+            .then(console.log)
+            .console.error(console.error)
+  },
+
+  'openwhyd.profile.stream.get': (limit, cookie) => {
+    const url = `${API_URL}/?format=json&limit=${limit}`
+
+    return getWithCookie(url, cookie)
+		          .then((json) => {
+                return {
+                  tracks: json.map(convertTrack)
+                }
+              })
+              .catch(console.error)
+  },
+
+  'openwhyd.profile.playlists.post': (trackName, cookie) => {
+    const playlistForm = {
+      action : 'create',
+      name: ''
+    }
+
+    return postWithCookie(url, playlistForm, cookie)
               .then(console.log)
-              .console.error(console.error)
-    },
+              .catch(console.error)
+  },
 
-    'openwhyd.profile.stream.get': (profileId, limit) => {
-      const url = `${API_URL}/?format=json&limit=${limit}`
+  'openwhyd.profile.playlists.update': (playlistId, name, cookie) => {
+    const playlistForm = {
+      action : 'rename',
+      id: playlistId,
+      name
+    }
 
-      return get(url)
-            		.then((result) => result.json())
-  		          .then((json) => {
-                  return {
-                    profileId,
-                    tracks: json.map(convertTrack)
-                  }
-                })
-                .catch(console.error)
-    },
+    return postWithCookie(url, playlistForm, cookie)
+              .then(console.log)
+              .catch(console.error)
+  },
 
-    'openwhyd.profile.playlists.post': (trackName, cookie) => {
-      const playlistForm = {
-        action : 'create',
-        name: ''
-      }
+  'openwhyd.profile.playlists.delete': (playlistId, cookie) => {
+    const playlistForm = {
+      action : 'delete',
+      id: playlistId
+    }
 
-      return postWithCookie(url, playlistForm, cookie)
-                .then(console.log)
-                .catch(console.error)
-    },
+    return postWithCookie(url, playlistForm, cookie)
+              .then(console.log)
+              .catch(console.error)
+  },
 
-    'openwhyd.profile.playlists.update': (playlistId, name, cookie) => {
-      const playlistForm = {
-        action : 'rename',
-        id: playlistId,
-        name
-      }
+  'openwhyd.profile.following.post': (followedId, cookie) => {
+    const query = `?action=insert&tId=${followedId}&_=${Date.now()}`
+    const url = `${API_URL}/api/follow${query}`
 
-      return postWithCookie(url, playlistForm, cookie)
-                .then(console.log)
-                .catch(console.error)
-    },
+    return getWithCookie(url)
+              .then(console.log)
+              .catch(console.error)
+  },
 
-    'openwhyd.profile.playlists.delete': (playlistId, cookie) => {
-      const playlistForm = {
-        action : 'delete',
-        id: playlistId
-      }
+  'openwhyd.profile.following.delete': (profileId, limit) => {
+    const query = `?action=delete&tId=${followedId}&_=${Date.now()}`
+    const url = `${API_URL}/api/follow${query}`
 
-      return postWithCookie(url, playlistForm, cookie)
-                .then(console.log)
-                .catch(console.error)
-    },
+    return getWithCookie(url)
+              .then(console.log)
+              .catch(console.error)
+  },
 
-    'openwhyd.profile.following.post': (followedId, cookie) => {
-      const query = `?action=insert&tId=${followedId}&_=${Date.now()}`
-      const url = `${API_URL}/api/follow${query}`
+  // public
+  'openwhyd.search': (keywords, limit) => {
+    // TODO : with and without cookie?
+    const url = `${API_URL}/search?q=${keywords}&format=json&context=header&_=${Date.now()}`
 
-      return getWithCookie(url)
-                .then(console.log)
-                .catch(console.error)
-    },
+    let limitedConvertSearch = convertSearch(limit)
 
-    'openwhyd.profile.following.delete': (profileId, limit) => {
-      const query = `?action=delete&tId=${followedId}&_=${Date.now()}`
-      const url = `${API_URL}/api/follow${query}`
+    return get(url)
+            .then((result) => result.json())
+            .then((json) => {
+              return [
+                ...limitedConvertSearch(json.results.user, 'user', 'user'),
+                ...limitedConvertSearch(json.results.track, 'track', 'track'),
+                  ...limitedConvertSearch(json.results.post, 'post', 'track'),
+                ...limitedConvertSearch(json.results.playlist, 'playlist', 'playlist'),
+              ]
+            })
+            .catch(console.error)
+  },
 
-      return getWithCookie(url)
-                .then(console.log)
-                .catch(console.error)
-    },
+  // tracks
+  'openwhyd.tracks.getOne': (openwhydUrl) => {
+    const url = `${API_URL}${openwhydUrl}?format=json`
 
-    // public
-    'openwhyd.search': (keywords, limit) => {
-      // TODO : with and without cookie?
-      const url = `${API_URL}/search?q=${keywords}&format=json&context=header&_=${Date.now()}`
+    // TODO : convert from eId to URL
+    console.log('URL:', url)
+    // FIXME : what to do if track cannot be found?
+    // and why would i get a stranger result like this?
+    // algolia index not up to date?
 
-      let limitedConvertSearch = convertSearch(limit)
+    return get(url)
+            .then((result) => result.json())
+            .then((track) => {
+              console.log(track)
+              return eIdToURL(track.eId.split('/'))
+            })
+            .catch(console.error)
+  },
 
-      return get(url)
-              .then((result) => result.json())
-              .then((json) => {
-                return [
-                  ...limitedConvertSearch(json.results.user, 'user', 'user'),
-                  ...limitedConvertSearch(json.results.track, 'track', 'track'),
-//                  ...limitedConvertSearch(json.results.post, 'post', 'track'),
-                  ...limitedConvertSearch(json.results.playlist, 'playlist', 'playlist'),
-                ]
+  'openwhyd.profile.tracks.hot.get': (limit, genre) => {
+    const url = genre ?
+                `${API_URL}/hot/${genre}?format=json` :
+                `${API_URL}/hot?format=json&limit=${limit}`
+
+    return get(url)
+          		.then((result) => result.json())
+		          .then((json) => {
+                return {
+                  limit,
+                  tracks: json.tracks.map(convertHotTrack)
+                }
               })
               .catch(console.error)
-    },
+  },
 
-    // tracks
-    'openwhyd.tracks.getOne': (openwhydUrl) => {
-      const url = `${API_URL}${openwhydUrl}?format=json`
+  'openwhyd.profile.tracks.get': (profileId, limit, filter) => {
+		const url = filter ?
+                `${API_URL}/search?q=${filter}&uid=${profileId}&format=json&_=${Date.now()}` :
+                `${API_URL}/u/${profileId}?format=json&limit=${limit}`
 
-      // TODO : convert from eId to URL
-      console.log('URL:', url)
-      // FIXME : what to do if track cannot be found?
-      // and why would i get a stranger result like this?
-      // algolia index not up to date?
+		return get(url)
+          		.then((result) => result.json())
+		          .then((json) => {
+								return {
+									profileId,
+									limit,
+									tracks: filter ? json.results.map(convertTrack).slice(0, limit + 1) :
+																	 json.map(convertTrack),
+								}
+							})
+		          .catch(console.error)
+	},
 
-      return get(url)
-              .then((result) => result.json())
-              .then((track) => {
-                console.log(track)
-                return eIdToURL(track.eId.split('/'))
-              })
-              .catch(console.error)
-    },
+  // user
+	'openwhyd.profile.user.get': (profileId) => {
+		const url = `${API_URL}/api/user?id=${profileId}&includeSubscr=true&countPosts=true`
 
-    'openwhyd.profile.tracks.hot.get': (limit, genre) => {
-      const url = genre ?
-                  `${API_URL}/hot/${genre}?format=json` :
-                  `${API_URL}/hot?format=json&limit=${limit}`
+		return get(url)
+          		.then((result) => result.json())
+		          .then((json) => {
+								const image = json.img.search('facebook') > -1 ?
+															json.img :
+															`${API_URL}${json.img}`
 
-      return get(url)
-            		.then((result) => result.json())
-  		          .then((json) => {
-                  return {
-                    limit,
-                    tracks: json.tracks.map(convertHotTrack)
-                  }
-                })
-                .catch(console.error)
-    },
+								const coverImage = `${API_URL}${json.cvrImg}`
 
-    'openwhyd.profile.tracks.get': (profileId, limit, filter) => {
-  		const url = filter ?
-                  `${API_URL}/search?q=${filter}&uid=${profileId}&format=json&_=${Date.now()}` :
-                  `${API_URL}/u/${profileId}?format=json&limit=${limit}`
-
-  		return get(url)
-            		.then((result) => result.json())
-  		          .then((json) => {
-									return {
-										profileId,
-										limit,
-										tracks: filter ? json.results.map(convertTrack).slice(0, limit + 1) :
-																		 json.map(convertTrack),
-									}
-								})
-  		          .catch(console.error)
-		},
-
-    // user
-		'openwhyd.profile.user.get': (profileId) => {
-  		const url = `${API_URL}/api/user?id=${profileId}&includeSubscr=true&countPosts=true`
-
-  		return get(url)
-            		.then((result) => result.json())
-  		          .then((json) => {
-									return {
-										profileId,
+								return {
+									profileId,
+									profile: {
+										_id: json._id,
+										username: json.name,
+                  	image,
+										coverImage,
+										localisation: json.loc,
+										biography: json.bio,
 										stats: {
 											tracks: json.nbPosts,
 											playlists: json.pl.length,
@@ -507,81 +531,82 @@ if (Meteor.isServer) {
 											following: json.nbSubscriptions,	
 										}
 									}
-								})
-  		          .catch(console.error)
-		},
+								}
+							})
+		          .catch(console.error)
+	},
 
-    // playlists
-    'openwhyd.profile.playlists.get': (profileId) => {
-  		const url = `${API_URL}/api/user?id=${profileId}`
+  // playlists
+  'openwhyd.profile.playlists.get': (profileId) => {
+		const url = `${API_URL}/api/user?id=${profileId}`
 
-  		return get(url)
-            		.then((result) => result.json())
-  		          .then((json) => {
-									return {
-										profileId,
-									  playlists: json.pl.map((playlist) => {
-                      const playlistUid = playlist.url.split('/')[2] + '_' + playlist.id
-                      return {
-                        _id: playlist.id,
-                        name: playlist.name,
-                        image: `${API_URL}/img/playlist/${playlistUid}`,
-                        tracksNbr: playlist.nbTracks
-                      }
-                    }).sort((a, b) => {
-                      return a.name < b.name ? -1 :
-                             a.name > b.name ?  1 : 0
-                    })
-									}
-								})
-  		          .catch(console.error)
-    },
+		return get(url)
+          		.then((result) => result.json())
+		          .then((json) => {
+								return {
+									profileId,
+								  playlists: json.pl.map((playlist) => {
+                    const playlistUid = playlist.url.split('/')[2] + '_' + playlist.id
+                    return {
+                      _id: playlist.id,
+                      name: playlist.name,
+                      image: `${API_URL}/img/playlist/${playlistUid}`,
+                      tracksNbr: playlist.nbTracks
+                    }
+                  }).sort((a, b) => {
+                    return a.name < b.name ? -1 :
+                           a.name > b.name ?  1 : 0
+                  })
+								}
+							})
+		          .catch(console.error)
+  },
 
-    'openwhyd.profile.playlists.tracks.get': (profileId, playlistId, limit, filter) => {
-  		const url = `${API_URL}/u/${profileId}/playlist/${playlistId}?format=json&limit={limit}`
+  'openwhyd.profile.playlists.tracks.get': (profileId, playlistId, limit, filter) => {
+		const url = `${API_URL}/u/${profileId}/playlist/${playlistId}?format=json&limit={limit}`
 
-  		return get(url)
-            		.then((result) => result.json())
-  		          .then((json) => {
-                  return {
-                    profileId,
-                    limit,
-                    tracks: json.map(convertTrack).slice(0, limit + 1)
-                  }
-								})
-  		          .catch(console.error)
-    },
+		return get(url)
+          		.then((result) => result.json())
+		          .then((json) => {
+                return {
+                  profileId,
+                  limit,
+                  tracks: json.map(convertTrack).slice(0, limit + 1)
+                }
+							})
+		          .catch(console.error)
+  },
 
-    // followers
-    'openwhyd.profile.followers.get': (profileId, limit, filter) => {
-      const url = `${API_URL}/api/follow/fetchFollowers/${profileId}`
+  // followers
+  'openwhyd.profile.followers.get': (profileId, limit, filter) => {
+    const url = `${API_URL}/api/follow/fetchFollowers/${profileId}`
 
-  		return get(url)
-            		.then((result) => result.json())
-                .then((json) => {
-                  return {
-                    profileId,
-                    limit,
-                    follows: json.map(convertFollower)
-                  }
-								})
-  		          .catch(console.error)
-    },
+		return get(url)
+          		.then((result) => result.json())
+              .then((json) => {
+                return {
+                  profileId,
+                  limit,
+                  follows: json.map(convertFollower)
+                }
+							})
+		          .catch(console.error)
+  },
 
-    // following
-    'openwhyd.profile.following.get': (profileId, limit, filter) => {
-      const url = `${API_URL}/api/follow/fetchFollowing/${profileId}`
+  // following
+  'openwhyd.profile.following.get': (profileId, limit, filter) => {
+    const url = `${API_URL}/api/follow/fetchFollowing/${profileId}`
 
-  		return get(url)
-            		.then((result) => result.json())
-  		          .then((json) => {
-                  return {
-                    profileId,
-                    limit,
-                    follows: json.map(convertFollowed(profileId))
-                  }
-								})
-  		          .catch(console.error)
-    },    
-  })
+		return get(url)
+          		.then((result) => result.json())
+		          .then((json) => {
+                return {
+                  profileId,
+                  limit,
+                  follows: json.map(convertFollowed(profileId))
+                }
+							})
+		          .catch(console.error)
+  },    
+})
 }
