@@ -104,19 +104,32 @@ const emailLogin = (email, password) => {
  .catch(console.error)
 }
 
-const facebookLogin = (facebookId, facebookToken) => {
-  const url = '${API_URL}/facebookLogin'
+const facebookLogin = (facebookId, accessToken) => {
+  const url = `${API_URL}/facebookLogin?action=login`
 
   return post(url, {
     ajax: true,
     fbUid: facebookId,
-    fbAccessToken: facebookToken,
+    fbAccessToken: accessToken,
     includeUser: true
   })
-  .then((result) => result.json())
-  .then((json) => {
-    redis.set(json._id, result.headers.get('set-cookie'))
-    return json
+  .then((result) => {
+	 return result.json()
+ 							 .then((json) => {
+                if (json.user) {
+                  return {
+                    currentUser: {
+                      _id: json.user._id,
+                      username: json.user.name,
+                      image: `${API_URL}${json.user.img}`
+                    },
+                    username: json.user.name,
+                    defaultPlaylist: {}, //TODO ??
+ 							      cookie: result.headers.get('set-cookie'),
+                  }
+                }
+ 							  return { error: json.error }
+ 							 })
   })
   .catch((e) => {
     console.error(e)
@@ -304,26 +317,8 @@ Meteor.methods({
     .catch(console.error)
   },
 
-  'openwhyd.login.email': (email, password) => {
-    return emailLogin(email, password)
-  },
-
-  'openwhyd.login.facebook': (facebookId) => {
-    const url = `${API_URL}/facebookLogin`
-
-    return get(login_url, {
-            ajax: true,
-            fbUid: user.services.facebook.id,
-            fbAccessToken: user.services.facebook.accessToken,
-            includeUser: true
-    })
-    .then((result) => {
-    })
-    .catch((e) => {
-      console.error(e)
-      return false
-    })
-  },
+  'openwhyd.login.email': emailLogin,
+  'openwhyd.login.facebook': facebookLogin,
 
 	'openwhyd.logout': (cookie) => {
 		const url = `${API_URL}/login?action=logout&ajax=true&format=true`

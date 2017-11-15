@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 
 import { Field, reduxForm } from 'redux-form'
 
+import FacebookLogin from 'react-facebook-login';
+
 import sessionActions from '../../actions/session.js'
 import flashMessagesActions from '../../actions/flash_messages.js'
 
@@ -19,28 +21,25 @@ class Login extends Component {
     this.props.clearFlashMessage()
   }
 
-  facebookLogin (event) {
-    event.preventDefault()
-
-    Meteor.loginWithFacebook((error) => {
-      if (error) {
-        this.props.flashDanger(error.reason)
-// TODO : async error instead
-      }
-    })
+  facebookLogin (result) {
+    this.props.facebookLogin(result.id, result.accessToken)
+        .then((userId) => {
+		      this.props.history.push('/profile/' + userId + '/stream')
+        })
+        .catch(this.props.flashDanger)
   }
 
   emailLogin (event) {
     event.preventDefault()
 
-    const { email, password, login } = this.props
+    const { email, password, emailLogin } = this.props
         
 		if (!email || !password) {
 			this.props.flashDanger('Email and password cannot be empty')
 			return
 		}
 		
-    login(email, password)
+    emailLogin(email, password)
          .then((userId) => {
 		       this.props.history.push('/profile/' + userId + '/stream')
          })
@@ -77,18 +76,21 @@ class Login extends Component {
          	Login 
          </Button>
         </form>
-        {/*
         <div id="session-bottom">
           <Row>
-            <Button className='btn-facebook' onClick={this.facebookLogin.bind(this)}>
-              Login with facebook
-            </Button>
+            <FacebookLogin
+              appId={Meteor.settings.public.FACEBOOK_APP_ID}
+              autoLoad={false}
+              callback={this.facebookLogin.bind(this)}
+              icon="fa-facebook"
+            />
           </Row>
+          {/*
           <Row>
             <Link to='/register'>Not registered yet? Create an account!</Link>
           </Row>
+          */}
         </div>
-        */}
       </Panel>
     </Col>
   }
