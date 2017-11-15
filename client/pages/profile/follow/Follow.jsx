@@ -10,8 +10,6 @@ export default class Follow extends Component {
   render () {
     const { profileId, follow, session } = this.props
 
-    console.log(follow)
-    
     const name = follow.owner === profileId
                  ? follow.followedName
                  : follow.ownerName
