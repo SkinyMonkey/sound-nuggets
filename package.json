@@ -34,6 +34,7 @@
     "react-bootstrap": "^0.31.3",
     "react-coin-hive": "^1.0.2",
     "react-dom": "^16.0.0",
+    "react-facebook-login": "^3.6.2",
     "react-player": "git@github.com:CookPete/react-player.git#v1.0.0-beta.4",
     "react-redux": "^5.0.6",
     "react-router": "^4.1.2",
