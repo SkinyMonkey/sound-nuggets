@@ -1,72 +1,43 @@
-import { withTracker } from 'meteor/react-meteor-data'
+import React from 'react'
 import { connect } from 'react-redux'
 
-import { Tracks } from '../../../../imports/api/tracks.js'
-import { Follows } from '../../../../imports/api/follows.js'
+import { Col } from 'react-bootstrap'
 
 import TrackList from './TrackList.jsx'
-
 import Container from '../../../components/Container.jsx'
-import searchWrapper from '../../../components/SearchWrapper.jsx'
+import SearchWrapper from '../../../components/SearchWrapper.jsx'
+import Donate from '../../../components/Donate.jsx'
 
-const removeDoubles = (trackSet, userId) => {
-  // FIXME : Maybe there's a way to do that in mongo directly?
-  //         a 'unique on'?
-  //         unique pair
+import withMethodData from '../../../components/withMethodData.jsx'
 
-  // Remove the entry of the same url if not owned by the user
-  return trackSet.reduce((result, track) => {
-    // Did we find the same entry in the track list?
-    const foreignTrackIndex = result.findIndex((t) => {
-      return t.url === track.url
-    })
-
-    // We did not find it
-    if (foreignTrackIndex === -1) {
-      result.push(track)
-    } else if (track.owner === userId) { // Is this other track owned by the user
-      result.splice(foreignTrackIndex, 1)
-      result.push(track)
-    }
-    return result
-  }, [])
+const DummyContainer = (wrappedComponent) => {
+  return (props) => <div className='page-container container'>
+    <Col md={7} >
+      <div id='page'>
+      {React.createElement(wrappedComponent, props)}
+      </div>
+    </Col>
+    <Donate/>
+  </div>
 }
 
-const Stream = Container(searchWrapper(withTracker(({ match, session, filter, limit, pristine }) => {
-  const userId = session.currentUser ? session.currentUser._id : ''
-  const profileId = userId
+const tracksFromAPI = withMethodData((props, done) => {
+  const profileId = props.match.params.profileId
+  const { limit, filter } = props
 
-  // FIXME use lookup?
-  const subscriptions = Follows.find({ owner: userId }
-                                    , { sort: { createdAt: -1 }, limit })
-                                    .fetch()
+  const cookie = document.cookie
 
-  const subscriptionsIds = subscriptions.map((s) => s.followed)
-                                         .concat(userId)
+  Meteor.call('openwhyd.profile.stream.get', limit, cookie, done);
+})
 
-  let findCriterias = { owner: { $in: subscriptionsIds } }
+const DISABLED = true
 
-  if (filter) {
-    findCriterias.name = { $regex: filter }
-  }
-
-  const total = Tracks.find(findCriterias).count()
-  let tracks = Tracks.find(findCriterias
-                            , { sort: { createdAt: -1 }, limit })
-                            .fetch()
-
-  return {
-    tracks: tracks.length > 0 ? removeDoubles(tracks, userId) : tracks,
-    total,
-    profileId,
-    session,
-    limit,
-    pristine
-  }
-})(TrackList), 'Stream'))
+const Stream = SearchWrapper(tracksFromAPI(TrackList), 'Stream', DISABLED)
 
 function mapStateToProps (state, ownProps) {
-  return state.tracklist
+  return {
+    ...state.tracklist
+  }
 }
 
-export default connect(mapStateToProps)(Stream)
+export default connect(mapStateToProps)(DummyContainer(Stream))

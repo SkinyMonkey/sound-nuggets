@@ -54,6 +54,7 @@ class FollowButton extends Component {
 // followed               : the followed user
 // following              : the entry of follow between the currentUser and the followed
 
+// TODO : how to do that with openwhyd?
 export default withTracker(({ currentUser, followedId }) => {
   const followed = Meteor.users.findOne({ _id: followedId }) || {}
   const following = Follows.findOne({ owner: currentUser._id,

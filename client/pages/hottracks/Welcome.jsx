@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { Panel } from 'react-bootstrap'
+import { Panel, Col, Media } from 'react-bootstrap'
 
 import HotTracks from './HotTracks.jsx'
+import Donate from '../../components/Donate.jsx'
 
 // import Container from '../../components/Container.jsx'
 
@@ -9,12 +10,18 @@ import HotTracks from './HotTracks.jsx'
 //        -> fix CSS
 export class Welcome extends Component {
   render () {
+    const panelTitle = (
+      <h3>Welcome to sound-nuggets! (the openwhyd frontend)</h3>
+    )
+
     return <div className='page-container container'>
-      <Panel id='welcome'>
-        <h3>Welcome to sound-nuggets, an openwhyd frontend</h3>
-        <HotTracks {...this.props} />
+      <Col md={7}>
+      <Panel id='welcome' header={panelTitle}>
+          <HotTracks {...this.props} />
       </Panel>
-    </div>
+      </Col>
+      <Donate/>
+   </div>
   }
 }
 export default Welcome

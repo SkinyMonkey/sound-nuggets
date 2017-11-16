@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import { Button, ButtonGroup, FormGroup, ControlLabel } from 'react-bootstrap'
 
-import { addTrackFromUser, addTrack } from '../actions/AddTrack.js'
+import { addTrack } from '../actions/AddTrack.js'
 
 import PlaylistDropdown from '../components/PlaylistDropdown.jsx'
 
@@ -12,28 +12,21 @@ class AddTrack extends Component {
     super(props, context)
 
     this.state = {
-      playlistId: this.props.session.defaultPlaylist._id
+      playlistId: '',
+      playlistName: ''
     }
   }
 
   // User selected a playlist from the playlist list
-  onSelectPlaylist (playlistId) {
-    this.setState({ playlistId })
+  onSelectPlaylist (playlistId, playlistName) {
+    this.setState({ playlistId, playlistName })
   }
 
   // User choose to send like this
   onTrackSubmit (event) {
     event.preventDefault()
 
-    if (this.props.item.provider === 'sound-nuggets') {
-      addTrackFromUser(this.props.session
-                      , this.state.playlistId
-                      , this.props.item)
-    } else if (this.props.item.type === 'track') {
-      addTrack(this.props.session
-              , this.state.playlistId
-              , this.props.item)
-    }
+    addTrack(this.state.playlistId, this.state.playlistName, this.props.item)
 
     this.props.closeModal()
   }
@@ -42,7 +35,7 @@ class AddTrack extends Component {
     return <form onSubmit={this.onTrackSubmit.bind(this)}>
       <FormGroup>
         <ControlLabel>Choose a playlist</ControlLabel>
-        <PlaylistDropdown profileId={this.props.session.currentUser._id}
+        <PlaylistDropdown
           id={'playlistDropdown'}
           onSelect={this.onSelectPlaylist.bind(this)}
           currentValue={this.state.playlistId} />
@@ -58,7 +51,6 @@ class AddTrack extends Component {
 
 AddTrack.propTypes = {
   item: PropTypes.object.isRequired,
-  session: PropTypes.object.isRequired
 }
 
 export default AddTrack

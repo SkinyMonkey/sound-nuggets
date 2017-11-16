@@ -1,24 +1,17 @@
-import { withTracker } from 'meteor/react-meteor-data'
+import React from 'react'
+import { connect } from 'react-redux'
 
-import { Playlists } from '../../imports/api/playlists.js'
-
+import withMethodData from './withMethodData.jsx'
 import Dropdown from './Dropdown.jsx'
 
-const PlaylistDropdown = withTracker(({profileId, id, onSelect, currentValue}) => {
-  // TODO : sort by lastUsed?
-  //        5 first and then by name?
-  //        a split dropdown?
-  const playlists = Playlists.find({owner: profileId}
-                                  ,{ sort: { name: 1 } }).fetch()
+const PlaylistDropdown = withMethodData(({ profileId }, done) => {
+  Meteor.call('openwhyd.profile.playlists.get', profileId, done)
+})((props) => <Dropdown {...props} keyField='_id' valueField='name' options={props.playlists} />)
 
+const mapStateToProps = (state) => {
   return {
-    id,
-    onSelect,
-    keyField: '_id',
-    valueField: 'name',
-    options: playlists,
-    value: currentValue
+    profileId: state.session.currentUser._id
   }
-})(Dropdown)
+}
 
-export default PlaylistDropdown
+export default connect(mapStateToProps)(PlaylistDropdown)
