@@ -561,7 +561,8 @@ Meteor.methods({
                       _id: playlist.id,
                       name: playlist.name,
                       image: `${API_URL}/img/playlist/${playlistUid}`,
-                      tracksNbr: playlist.nbTracks
+                      tracksNbr: playlist.nbTracks,
+                      isDefault: false
                     }
                   }).sort((a, b) => {
                     return a.name < b.name ? -1 :
