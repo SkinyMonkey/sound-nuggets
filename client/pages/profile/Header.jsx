@@ -30,15 +30,17 @@ const ThumbnailProfil = ({image}) => {
   </Col>
 }
 
-const Header = ({ session, profile, isAuth, ownPage }) => {
+const Header = ({ session, profile }) => {
+  const isAuth = session.isAuth
+  const ownPage = session.isAuth && session.currentUser._id === profile._id
   const controlContent = ownPage
-                          ? <EditProfile />
+                          ? '' //<EditProfile />
                           : !isAuth ? ''
-                          : <FollowButton currentUser={session.currentUser}
-                            followedId={profile._id} />
+                          : '' /*<FollowButton currentUser={session.currentUser}
+                            followedId={profile._id} />*/
 
-  const coverImage = profile.profile.coverImage || '/img/defaultCover.jpg'
-  const avatar = profile.profile.image || '/img/defaultAvatar.png'
+  const coverImage = profile.coverImage || '/img/defaultCover.jpg'
+  const avatar = profile.image || '/img/defaultAvatar.png'
 
   return (
     <Jumbotron id='profile' style={{backgroundImage: 'url("' + coverImage + '")'}}>
@@ -56,13 +58,4 @@ const Header = ({ session, profile, isAuth, ownPage }) => {
     </Jumbotron>)
 }
 
-const ProfileHeader = withTracker(({profile, session}) => {
-  return {
-    session,
-    profile,
-    isAuth: session.isAuth,
-    ownPage: session.isAuth && session.currentUser._id === profile._id
-  }
-})(Header)
-
-export default ProfileHeader
+export default Header

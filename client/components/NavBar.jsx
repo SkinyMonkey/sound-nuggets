@@ -1,17 +1,33 @@
 import React from 'react'
-import { Meteor } from 'meteor/meteor'
-import { withTracker } from 'meteor/react-meteor-data'
+import { connect } from 'react-redux'
+
+import sessionActions from '../actions/session.js'
 
 import { Navbar, Nav, NavItem, MenuItem, DropdownButton, ButtonGroup, Button } from 'react-bootstrap'
 
+import modalActions from '../actions/modal.js'
+import AddIssue from '../partials/AddIssue.jsx'
+
 const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1)
 
-const Bar = ({profileId, session, history}) => {
+const SendBugNavItem = connect(null, modalActions)((props) => {
+  return <NavItem key={'issue'}
+    onClick={() => {
+      props.openModal({
+        title: 'Send an issue',
+        partial: AddIssue,
+      })
+    }}>
+    Found a bug?
+  </NavItem>
+})
+
+const NavBar = ({ match, history, session, logout }) => {
+  const profileId = match.params.profileId
   const isAuth = session.isAuth
   const currentUser = session.currentUser
   const userId = currentUser ? currentUser._id : ''
-  const profile = currentUser ? currentUser.profile : {}
-  const image = profile.image || '/img/defaultAvatar.png'
+  const image = currentUser.image || '/img/defaultAvatar.png'
   const buttonAvatarStyle = !currentUser ? {} : {
     'backgroundImage': 'url(' + image + ')',
     'backgroundRepeat': 'no-repeat',
@@ -23,9 +39,13 @@ const Bar = ({profileId, session, history}) => {
     'float': 'left'
   }
 
+  // TODO : clean this
   // To keep the order of display
-  let NAV_BAR_ENTRY = ['/welcome']
-  let NAV_BAR_ENTRIES = {
+  let NAV_BAR_ENTRY = isAuth ? ['/hottracks'] : ['/welcome']
+  let NAV_BAR_ENTRIES = isAuth ? {
+    '/hottracks': 'Hot tracks'
+  }
+  : {
     '/welcome': 'Hot tracks'
   }
 
@@ -58,19 +78,46 @@ const Bar = ({profileId, session, history}) => {
             })
         }
         </Nav>
+        <Nav>
+          <SendBugNavItem/>
+        </Nav>
+       {/*
+				<Navbar.Form pullLeft>
+         <Search thirdPartyApis={isAuth} history={history} session={session} />
+       	</Navbar.Form>
+			*/}
+       <Navbar.Form pullRight>
+         { !isAuth
+         ? <Button onClick={() => history.push('/login')}>Login</Button>
+         : <div>
+           <ButtonGroup id='profile-dropdown'>
+             <Button onClick={() => history.push('/profile/' + userId + '/tracks')} >
+               <div className='img-circle' style={buttonAvatarStyle} alt='User avatar' />
+               <strong>{currentUser.username}</strong>
+             </Button>
+             <DropdownButton title='' id='navbar-profile'>
+               <MenuItem eventKey='playlists' onClick={() => { history.push('/profile/' + userId + '/playlists') }}>Playlists</MenuItem>
+             </DropdownButton>
+           </ButtonGroup>
+
+           <DropdownButton title={<span className='oi oi-cog' />} id='settings-dropdown'>
+           {/*<MenuItem eventKey='invite-friends'>Invite Friends</MenuItem>
+             <MenuItem eventKey='settings'>Settings</MenuItem>*/}
+             <MenuItem eventKey='logout' onClick={logout}>Logout</MenuItem>
+           </DropdownButton>
+
+         </div>
+       }
+        </Navbar.Form>
       </Navbar.Collapse>
     </Navbar>
   )
 }
 
-const NavBar = withTracker(({match, session, history}) => {
-  const profileId = match.params.profileId
-
+const mapStateToProps = (state) => {
   return {
-    session,
-    profileId,
-    history
+    session: state.session,
   }
-})(Bar)
+}
 
-export default NavBar
+export default connect(mapStateToProps, sessionActions)(NavBar)

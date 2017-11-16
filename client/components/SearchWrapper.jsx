@@ -23,7 +23,7 @@ const parseQuery = (search) => {
   return _.object(_.compact(_.map(search.slice(1).split('&'), (item) => {  if (item) return item.split('=')})))
 }
 
-const searchWrapper = (WrappedComponent, title) => {
+const searchWrapper = (WrappedComponent, title, disabled = false) => {
   return class SearchWrapper extends Component {
     constructor (props, context) {
       super(props, context)
@@ -68,7 +68,7 @@ const searchWrapper = (WrappedComponent, title) => {
             <h5>{title}</h5>
           </Col>
           <Col>
-            <FormControl id='search-wrapper' type='text' onChange={this.onChange} value={this.state.value} placeholder='Filter' />
+            <FormControl id='search-wrapper' type='text' onChange={this.onChange} value={this.state.value} placeholder='Filter' disabled={disabled}/>
           </Col>
         </FormGroup>
       )

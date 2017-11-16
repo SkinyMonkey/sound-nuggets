@@ -28,13 +28,8 @@ const withMethodData = (getData) => {
 
       componentWillMount () {
         this.fetchData(this.props)
-        console.log('Mounting : ', ComposedComponent.displayName)
       }
  
-      componentWillUnmount () {
-        console.log('Unmounting : ', ComposedComponent.displayName)
-      }
-
       render () {
         return !this.state.initialized ? <div>Loading</div> :
                <ComposedComponent {...this.props}

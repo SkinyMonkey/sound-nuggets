@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 
 import { Button, ButtonGroup, ButtonToolbar, FormControl, FormGroup, ControlLabel } from 'react-bootstrap'
 
-import { Playlists } from '../../imports/api/playlists.js'
-
 import Confirm from './Confirm.jsx'
 
 class EditPlaylist extends Component {
@@ -22,8 +20,11 @@ class EditPlaylist extends Component {
 
   onSubmitName (event) {
     event.preventDefault()
+    // TODO : use Meteor call
+    /*
     Playlists.update(this.props.playlist._id
                     , {$set: {name: this.state.playlistName}})
+    */
     this.props.closeModal()
   }
 
@@ -35,7 +36,10 @@ class EditPlaylist extends Component {
       buttonClass: 'danger',
       callback: (event) => {
         event.preventDefault()
+        // TODO : use Meteor call
+        /*
         Playlists.remove(this.props.playlist._id)
+        */
         this.props.closeModal()
       }
     })

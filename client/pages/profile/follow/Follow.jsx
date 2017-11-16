@@ -10,8 +10,6 @@ export default class Follow extends Component {
   render () {
     const { profileId, follow, session } = this.props
 
-    console.log(follow)
-    
     const name = follow.owner === profileId
                  ? follow.followedName
                  : follow.ownerName
@@ -47,9 +45,9 @@ export default class Follow extends Component {
           <div className='control'>
             { !session.isAuth ||
                session.currentUser._id === followedId ? ''
-              : <FollowButton currentUser={session.currentUser}
+              : ''/*<FollowButton currentUser={session.currentUser}
                 followedId={followedId}
-                            />
+                            />*/
             }
           </div>
         </Media.Body>

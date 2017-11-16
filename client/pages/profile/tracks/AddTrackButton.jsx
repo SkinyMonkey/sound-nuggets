@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import { Button } from 'react-bootstrap'
 
-import { addTrackFromUser } from '../../../actions/AddTrack.js'
+import { addTrack } from '../../../actions/AddTrack.js'
 
 import PlaylistDropdown from '../../../components/PlaylistDropdown.jsx'
 
@@ -12,7 +12,7 @@ export default class AddTrackButton extends Component {
 
     this.state = {
       editDropdown: false,
-      playlistId: this.props.session.defaultPlaylist._id
+      playlistId: ''
     }
 
     this.onClickAddTrack = this.onClickAddTrack.bind(this)
@@ -24,17 +24,13 @@ export default class AddTrackButton extends Component {
   onSubmitAddTrack (event) {
     event.preventDefault()
 
-    addTrackFromUser(this.props.session
-                    , this.state.playlistId
-                    , this.props.track)
+    addTrack(this.state.playlistId, this.props.track)
 
-    this.setState({editDropdown: false,
-      playlistId: this.props.session.defaultPlaylist.id})
+    this.setState({editDropdown: false, playlistId: ''})
   }
 
   onCancelAddTrack (event) {
-    this.setState({editDropdown: false,
-      playlistId: this.props.session.defaultPlaylist.id})
+    this.setState({editDropdown: false, playlistId: '' })
   }
 
   onSelectPlaylist (event) {
@@ -49,8 +45,8 @@ export default class AddTrackButton extends Component {
   render () {
     return (this.state.editDropdown
       ? <form onSubmit={this.onSubmitAddTrack}>
-        <PlaylistDropdown profileId={this.props.session.currentUser._id}
-          id={'addTrackPlaylistDropdown'}
+        <PlaylistDropdown
+          id='addTrackPlaylistDropdown'
           onChange={this.onSelectPlaylist}
           currentValue={this.state.playlistId} />
         <Button type='submit' value='Add' />

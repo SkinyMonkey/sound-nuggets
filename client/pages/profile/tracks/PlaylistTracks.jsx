@@ -14,7 +14,9 @@ const tracksFromAPI = withMethodData((props, done) => {
   Meteor.call('openwhyd.profile.playlists.tracks.get', profileId, playlistId, limit, filter, done);
 })
 
-const PlaylistTracks = searchWrapper(tracksFromAPI(TrackList), 'Tracks')
+const DISABLED = true
+
+const PlaylistTracks = searchWrapper(tracksFromAPI(TrackList), 'Tracks', DISABLED)
 
 function mapStateToProps (state, ownProps) {
   return state.tracklist
