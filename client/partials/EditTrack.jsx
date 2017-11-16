@@ -5,8 +5,6 @@ import { Button, ButtonGroup, ButtonToolbar, ControlLabel, FormGroup } from 'rea
 
 import Confirm from './Confirm.jsx'
 
-import { Tracks } from '../../imports/api/tracks.js'
-
 import PlaylistDropdown from '../components/PlaylistDropdown.jsx'
 
 class EditTrack extends Component {
@@ -28,9 +26,10 @@ class EditTrack extends Component {
   onTrackEditSubmit (event) {
     event.preventDefault()
 
-    Tracks.update(this.props.track._id
-                  , {$set: { playlist: this.state.playlistId,
-                    playlistName: this.state.playlistName }})
+		const { playlistId, playlistName } = this.state
+
+    Meteor.call('openwhyd.profile.tracks.update', this.props.track, playlistId, playlistName, document.cookie)
+
     this.props.closeModal()
   }
 
@@ -42,7 +41,9 @@ class EditTrack extends Component {
       buttonClass: 'danger',
       callback: (event) => {
         event.preventDefault()
-        Tracks.remove(this.props.track._id)
+
+        Meteor.call('openwhyd.profile.tracks.delete', this.props.track._id, document.cookie)
+
         this.props.closeModal()
       }
     })
@@ -52,7 +53,7 @@ class EditTrack extends Component {
     return <form onSubmit={this.onTrackEditSubmit.bind(this)}>
       <FormGroup>
         <ControlLabel>Choose a new playlist</ControlLabel>
-        <PlaylistDropdown profileId={this.props.session.currentUser._id}
+        <PlaylistDropdown
           id={'playlistDropdown'}
           onSelect={this.onSelectPlaylist.bind(this)}
           currentValue={this.state.playlistId} />
@@ -74,7 +75,6 @@ class EditTrack extends Component {
 
 EditTrack.propTypes = {
   track: PropTypes.object.isRequired,
-  session: PropTypes.object.isRequired
 }
 
 export default EditTrack
