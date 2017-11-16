@@ -7,8 +7,6 @@ import Autocomplete from 'react-autocomplete'
 import { Panel, Media } from 'react-bootstrap'
 
 import modalActions from '../actions/modal.js'
-import { Tracks } from '../../imports/api/tracks.js'
-import { Playlists } from '../../imports/api/playlists.js'
 
 import AddTrack from '../partials/AddTrack.jsx'
 import EditTrack from '../partials/EditTrack.jsx'

@@ -1,9 +1,7 @@
-import React, { Component } from 'react'
+import { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import { Button, ButtonGroup, FormControl, FormGroup, ControlLabel } from 'react-bootstrap'
-
-import { Playlists } from '../../imports/api/playlists.js'
 
 class AddPlaylist extends Component {
   constructor (props, context) {
@@ -20,9 +18,11 @@ class AddPlaylist extends Component {
 
   onSubmitName (event) {
     event.preventDefault()
+    /* // TODO : replace by Meteor call
     Playlists.insert({owner: this.props.session.currentUser._id,
       name: this.state.playlistName,
       isDefault: false})
+    */
     this.props.closeModal()
   }
 
@@ -45,5 +45,7 @@ class AddPlaylist extends Component {
 AddPlaylist.propTypes = {
   session: PropTypes.object.isRequired
 }
+
+// TODO : use redux form?
 
 export default AddPlaylist

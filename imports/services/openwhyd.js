@@ -1,6 +1,7 @@
 import fetch from 'node-fetch'
 import md5 from 'md5'
-//import redis from '../server/redis.js'
+
+import _ from 'lodash'
 
 if (Meteor.isServer) {
 
@@ -73,6 +74,21 @@ const postWithCookie = (url, data, cookie) => {
 // TODO : set the cookie in a redis instance?
 //        would avoid some requests, no db needed
 
+const convertUser = (result, json) => {
+  return {
+    currentUser: {
+      _id: json.user._id,
+      username: json.user.name,
+      image: `${API_URL}${json.user.img}`
+    },
+    playlists: json.user.pl.map((playlist) => {return {_id: playlist.id
+                                                      ,name: playlist.name}}),
+    username: json.user.name,
+    defaultPlaylist: {}, //TODO ??
+ 	  cookie: result.headers.get('set-cookie'),
+  }
+}
+
 const emailLogin = (email, password) => {
  const loginUrl = API_URL + '/login'
 
@@ -87,16 +103,7 @@ const emailLogin = (email, password) => {
 	return result.json()
  							 .then((json) => {
                 if (json.user) {
-                  return {
-                    currentUser: {
-                      _id: json.user._id,
-                      username: json.user.name,
-                      image: `${API_URL}${json.user.img}`
-                    },
-                    username: json.user.name,
-                    defaultPlaylist: {}, //TODO ??
- 							      cookie: result.headers.get('set-cookie'),
-                  }
+                  return convertUser(result, json)
                 }
  							  return { error: json.error }
  							 })
@@ -117,16 +124,7 @@ const facebookLogin = (facebookId, accessToken) => {
 	 return result.json()
  							 .then((json) => {
                 if (json.user) {
-                  return {
-                    currentUser: {
-                      _id: json.user._id,
-                      username: json.user.name,
-                      image: `${API_URL}${json.user.img}`
-                    },
-                    username: json.user.name,
-                    defaultPlaylist: {}, //TODO ??
- 							      cookie: result.headers.get('set-cookie'),
-                  }
+                  return convertUser(result, json)
                 }
  							  return { error: json.error }
  							 })
@@ -157,6 +155,36 @@ const eIdToURL = (spliteid) => {
   return eidTable[provider] + spliteid.slice(2).join('/')
 }
 
+//urlPrefix: '//youtube.com/watch?v=',
+//urlPrefix: '//soundcloud.com/',
+//urlPrefix: '//dailymotion.com/video/',
+//urlPrefix: '//vimeo.com/',
+const urlEidConversionTable = {
+	'yt': (url) => {
+		return (url.match(/(youtube\.com\/(v\/|embed\/|(?:.*)?[\?\&]v=)|youtu\.be\/)([a-zA-Z0-9_\-]+)/) || []).pop();
+	},
+	'sc': (url) => {
+		return (url.indexOf('soundcloud.com/player') != -1 ? (url.match(/url=([^&]*)/) || []).pop() : null)
+			|| (url.match(/https?:\/\/(?:www\.)?soundcloud\.com\/([\w-_\/]+)/) || []).pop()
+	},
+	'dm': (url) => {
+		return (url.match(/https?:\/\/(?:www\.)?dailymotion.com(?:\/embed)?\/video\/([\w-]+)/) || []).pop()
+	},
+	'vi': (url) => {
+		return (url.match(/https?:\/\/(?:www\.)?vimeo\.com\/(clip\:)?(\d+)/) || []).pop()
+	}
+}
+
+const urlToEid = (url) => {
+  return _.reduce(urlEidConversionTable, (result, extractId, key) => {
+		const eId = extractId(url)
+		if (!result && eId) {
+			return `/${key}/${eId}`
+		}
+		return result
+  }, '')
+}
+
 const getProvider = (eId) => {
 	if (eId.startsWith('/yt/')) {
 		return 'youtube'
@@ -167,34 +195,12 @@ const getProvider = (eId) => {
 	return ''
 }
 
-const toOpenwhydUrl = (url) => {
-  // TODO : implement
+const toOpenwhydSrc = (url) => {
   return {
     'src[id]': '',
     'src[name]': '',
-    eId: '',
+    eId: urlToEid(url),
   }
-}
-
-const postTrack = () => {
-  const url = '${API_URL}/api/post'
-  const openwhydSrc = toOpenwhydSrc(track.url)
-
-  const trackForm = {
-    ...openwhydSrc,
-    'name': track.name,
-    'img': track.image,
-    'pl[id]': track.playlist,
-    'ctx': 'bk',
-    'pl[name]': track.playlistName,
-    'text': '',
-    'action': 'insert',
-  }
-
-  return postWithCookie(url, trackForm, cookie)
-            .then(console.log)
-            .console.error(console.error)
-
 }
 
 const convertTrack = (openwhydTrack) => {
@@ -212,7 +218,7 @@ const convertTrack = (openwhydTrack) => {
 		provider: getProvider(openwhydTrack.eId),
 		image: openwhydTrack.img,
 		originalOwner : null,
-		originalOwnerName : "",
+		originalOwnerName : '',
 	}
 }
 
@@ -287,36 +293,7 @@ const convertSearch = (limit) => {
   }
 }
 
-const getUser = (profileId) => {
-  const url = `${API_URL}/api/user?id=${profileId}&includeSubscr=true&countPosts=true`
-
-  return get(url)
-        		.then((result) => result.json())
-            .then((json) => {
-              return {
-                _id: profileId,
-                name: json.name,
-                image: json.img,
-                text: json.text
-              }
-            })
-            .catch(console.error)
-}
-
 Meteor.methods({
-  'openwhyd.session.valid': (userId) => {
-    return new Promise((resolve, reject) => {
-      redis.get(userId, (err, reply) => {
-        if (err) return reject(err)
-        if (!reply ||
-            cookie.parse(reply).date < Date.now())
-          return resolve(false)
-        return resolve(true)
-      })
-    })
-    .catch(console.error)
-  },
-
   'openwhyd.login.email': emailLogin,
   'openwhyd.login.facebook': facebookLogin,
 
@@ -332,12 +309,14 @@ Meteor.methods({
 
 		return getWithCookie(url, cookie)
 		          .then((json) => {
+                console.log(json)
 								return {
                   currentUser: {
                     _id: json._id,
                     username: json.name,
                     image: `${API_URL}${json.img}`
                   },
+                  playlists: json.pl,
                   username: json.name,
                   defaultPlaylist: {}, //TODO ??
                   isAuth: true,
@@ -346,18 +325,54 @@ Meteor.methods({
 		          .catch(console.error)
 	},
 
-  'openwhyd.profile.tracks.post': postTrack,
-  'openwhyd.profile.tracks.update': postTrack,
+  'openwhyd.profile.tracks.post': (track, cookie) => {
+		const url = `${API_URL}/api/post`
+		const openwhydSrc = toOpenwhydSrc(track.url)
+
+		const trackForm = {
+			...openwhydSrc,
+			'name': track.name,
+			'img': track.image,
+			'ctx': 'bk',
+			'text': '',
+			'pl[id]': track.playlist,
+			'pl[name]': track.playlistName,
+			'action': 'insert',
+		}
+
+		return postWithCookie(url, trackForm, cookie)
+			.catch(console.error)
+	},
+
+	'openwhyd.profile.tracks.update': (track, playlistId, playlistName, cookie) => {
+		const url = `${API_URL}/api/post`
+		const openwhydSrc = toOpenwhydSrc(track.url)
+	
+		const trackForm = {
+			...openwhydSrc,
+			'_id': track._id,
+			'name': track.name,
+			'img': track.image,
+			'ctx': 'bk',
+			'text': '',
+			'pl[id]': playlistId,
+			'pl[name]': playlistName,
+			'action': 'insert',
+		}
+	
+		return postWithCookie(url, trackForm, cookie)
+			.catch(console.error)
+	},
 
   'openwhyd.profile.tracks.delete': (trackId, cookie) => {
+    const url = `${API_URL}/api/post?action=delete&_id=${trackId}`
     const trackForm = {
       action : 'delete',
-      _id: '5a001cbcaa2aa06454be3ef1'
+      _id: trackId
     }
 
     return postWithCookie(url, trackForm, cookie)
-            .then(console.log)
-            .console.error(console.error)
+            .catch(console.error)
   },
 
   'openwhyd.profile.stream.get': (limit, cookie) => {
