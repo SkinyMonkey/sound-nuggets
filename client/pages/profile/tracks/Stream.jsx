@@ -30,8 +30,9 @@ const tracksFromAPI = withMethodData((props, done) => {
   Meteor.call('openwhyd.profile.stream.get', limit, cookie, done);
 })
 
-// TODO : replace SearchWrapper with a dumb one
-const Stream = SearchWrapper(tracksFromAPI(TrackList), 'Stream')
+const DISABLED = true
+
+const Stream = SearchWrapper(tracksFromAPI(TrackList), 'Stream', DISABLED)
 
 function mapStateToProps (state, ownProps) {
   return {
