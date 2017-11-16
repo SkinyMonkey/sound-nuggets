@@ -39,9 +39,13 @@ const NavBar = ({ match, history, session, logout }) => {
     'float': 'left'
   }
 
+  // TODO : clean this
   // To keep the order of display
-  let NAV_BAR_ENTRY = ['/welcome']
-  let NAV_BAR_ENTRIES = {
+  let NAV_BAR_ENTRY = isAuth ? ['/hottracks'] : ['/welcome']
+  let NAV_BAR_ENTRIES = isAuth ? {
+    '/hottracks': 'Hot tracks'
+  }
+  : {
     '/welcome': 'Hot tracks'
   }
 
@@ -97,8 +101,8 @@ const NavBar = ({ match, history, session, logout }) => {
            </ButtonGroup>
 
            <DropdownButton title={<span className='oi oi-cog' />} id='settings-dropdown'>
-             <MenuItem eventKey='invite-friends'>Invite Friends</MenuItem>
-             <MenuItem eventKey='settings'>Settings</MenuItem>
+           {/*<MenuItem eventKey='invite-friends'>Invite Friends</MenuItem>
+             <MenuItem eventKey='settings'>Settings</MenuItem>*/}
              <MenuItem eventKey='logout' onClick={logout}>Logout</MenuItem>
            </DropdownButton>
 

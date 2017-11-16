@@ -61,7 +61,6 @@ class App extends Component {
     //        redirect to /stream if logged from /
     //        else to ?
 
-    console.log('PROPS:', this.props)
     return (<div id='app'>
         <Router>
           <Switch>
@@ -69,6 +68,7 @@ class App extends Component {
             <Route path='/login' component={RedirectIfAuthenticated(Login, this.props)} />
             <Route path='/register' component={RedirectIfAuthenticated(Register, this.props)} />
             <Route path='/profile/:profileId' component={MainWithNavBar(Profile, this.props)} />
+            <Route path='/hottracks' component={MainWithNavBar(Welcome, this.props)} />
             <Route path='/welcome' component={RedirectIfAuthenticated(MainWithNavBar(Welcome), this.props)} />
             <Route path='/' exact component={RedirectIfAuthenticated(MainWithNavBar(Welcome), this.props)} />
             <Route path='*' component={RedirectIfAuthenticated(MainWithNavBar(Welcome), this.props)} />

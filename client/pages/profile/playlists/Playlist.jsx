@@ -29,14 +29,14 @@ class Playlist extends Component {
     return (this.props.session.isAuth &&
             this.props.session.currentUser._id === profileId &&
             playlist.isDefault === false
-            ? <div className='control'>
+            ? '' /*<div className='control'>
               <Col xs={3}>
                 <p onClick={this.editPlaylist.bind(this)}>
                   <span className='oi oi-pencil' />
                   Edit
                 </p>
               </Col>
-            </div>
+            </div>*/
           : '')
   }
 
