@@ -93,10 +93,8 @@ class Track extends Component {
     const { profileId, track } = this.props
     const user = this.props.session && this.props.session.currentUser
     const ownerTextContent = this.computeOwnerText(track)
-    const openwhyd = user && profileId === user.openwhydId
     const ownTrack = user && track.owner === user._id
     const isAuth = this.props.session && this.props.session.isAuth
-
     const playingBorder = this.props.isCurrentTrack ? 'track onit' : 'track'
     const playingIcon = this.props.isCurrentTrack && this.props.playing
                         ? 'status pause'
@@ -125,25 +123,23 @@ class Track extends Component {
           </Media>
 
           <div>
-            { isAuth
-                    ? openwhyd ? ''
-                    : ownTrack
-                      ? <div className='control'>
-                        <Col xs={3}>
-                          <p onClick={this.editTrack.bind(this)}>
-                            <span className='oi oi-pencil' />
-                            Edit
-                          </p>
-                        </Col>
-                      </div>
-                      : <div className='control'>
-                        <p onClick={this.addTrack.bind(this)}>
-                          <span className='oi oi-plus' />
-                          Add track
-                        </p>
-                      </div>
-                   : ''
-                }
+            { !isAuth ? '' :
+              ownTrack ?
+              <div className='control'>
+                <Col xs={3}>
+                  <p onClick={this.editTrack.bind(this)}>
+                    <span className='oi oi-pencil' />
+                    Edit
+                  </p>
+                </Col>
+              </div>
+              : <div className='control'>
+                <p onClick={this.addTrack.bind(this)}>
+                  <span className='oi oi-plus' />
+                  Add track
+                </p>
+              </div>
+            }
           </div>
         </Media.Body>
       </Media.ListItem>
