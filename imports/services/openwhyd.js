@@ -89,6 +89,15 @@ const convertUser = (result, json) => {
   }
 }
 
+const jsonToUser = (result) => (json) => {
+  const cookie = result.headers.get('set-cookie')
+  if (json.user && cookie) {
+    return convertUser(result, json)
+  }
+  if (!cookie) return { error: 'No cookie returned by the server' }
+  return { error: json.error }
+}
+
 const emailLogin = (email, password) => {
  const loginUrl = API_URL + '/login'
 
@@ -100,13 +109,7 @@ const emailLogin = (email, password) => {
    includeUser: true
  })
  .then((result) => {
-	return result.json()
- 							 .then((json) => {
-                if (json.user) {
-                  return convertUser(result, json)
-                }
- 							  return { error: json.error }
- 							 })
+	return result.json().then(jsonToUser(result))
  })
  .catch(console.error)
 }
@@ -121,13 +124,7 @@ const facebookLogin = (facebookId, accessToken) => {
     includeUser: true
   })
   .then((result) => {
-	 return result.json()
- 							 .then((json) => {
-                if (json.user) {
-                  return convertUser(result, json)
-                }
- 							  return { error: json.error }
- 							 })
+	 return result.json().then(jsonToUser(result))
   })
   .catch((e) => {
     console.error(e)
