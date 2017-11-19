@@ -276,7 +276,10 @@ class Player extends Component {
             </Col>
 
             <Col md={3} className='player-track-name'>
-              <p id='player-track-name'>{track.name}</p>
+              <p id='player-track-name'>
+                {/* TODO : JUMP to page + id is it ok with playlistUrl?*/}
+                <a href={"#track-" + track._id} >{track.name}</a>
+              </p>
             </Col>
 
             <Col md={1} className='playerVolumeButton'>

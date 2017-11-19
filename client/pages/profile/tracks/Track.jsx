@@ -103,7 +103,7 @@ class Track extends Component {
     const image = track.image || 'https://i.ytimg.com/vi/T0Jqdjbed40/mqdefault.jpg'
 
     return (
-      <Media.ListItem className={playingBorder}>
+      <Media.ListItem className={playingBorder} id={"track-" + track._id}>
         <Media.Left>
           <span className={playingIcon} />
           <img width='110' height='110' src={image} alt='Track image' onClick={this.onAddToCurrentPlaylist} />

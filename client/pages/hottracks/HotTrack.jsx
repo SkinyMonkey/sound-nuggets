@@ -10,6 +10,8 @@ import playerActions from '../../actions/player.js'
 import AddTrack from '../../partials/AddTrack.jsx'
 import EditTrack from '../../partials/EditTrack.jsx'
 
+// TODO : inherit Track
+
 // Track component - represents a single track item
 class Track extends Component {
   constructor (props, context) {
@@ -100,7 +102,7 @@ class Track extends Component {
     const image = track.image || 'https://i.ytimg.com/vi/T0Jqdjbed40/mqdefault.jpg'
 
     return (
-      <Media.ListItem className={playingBorder}>
+      <Media.ListItem className={playingBorder} id={'track-' + track._id}>
         <Media.Left>
           <span className={playingIcon} />
           <img width='110' height='110' src={image} alt='Track image' onClick={this.onAddToCurrentPlaylist} />
