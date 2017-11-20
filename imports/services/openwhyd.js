@@ -94,7 +94,16 @@ const jsonToUser = (result) => (json) => {
   if (json.user && cookie) {
     return convertUser(result, json)
   }
-  if (!cookie) return { error: 'No cookie returned by the server' }
+
+  if (json.result.startsWith('nok')) {
+    if (json.result.indexOf('not found') > -1) {
+      return { error: 'Register on openwhyd.org' }
+    }
+
+    return { error: json.result }
+  }
+
+//  if (!cookie) return { error: 'No cookie returned by the server' }
   return { error: json.error }
 }
 
