@@ -6,6 +6,7 @@ import _ from 'lodash'
 if (Meteor.isServer) {
 
 const API_URL = 'https://openwhyd.org'
+// const API_URL = 'http://localhost:8080' // For local testing
 
 /*
   This service is abstracting the communication with the openwhyd api.
@@ -57,36 +58,75 @@ const get = (url, config = {}) => {
   return fetch(url, options)
 }
 
-const getWithCookie = (url, cookie) => {
+const emptyPredicate = () => {
+//  throw new Error('Empty predicate')
+  return true
+}
+
+const checkPredicate = (predicate) => {
+  return (json) => {
+   if (predicate(json) === false) {
+     throw new Error(JSON.stringify(json))
+   }
+   return json
+  }
+}
+
+const getWithCookie = (url, cookie, predicate = emptyPredicate) => {
   const headers = {'Cookie': cookie}
 
   return get(url, {headers})
             .then((result) => result.json())
+            .then(checkPredicate(predicate))
 }
 
-const postWithCookie = (url, data, cookie) => {
+const postWithCookie = (url, data, cookie, predicate = emptyPredicate) => {
   const headers = {'Cookie': cookie}
 
   return post(url, data, {headers})
             .then((result) => result.json())
+            .then(checkPredicate(predicate))
 }
 
 // TODO : set the cookie in a redis instance?
 //        would avoid some requests, no db needed
 
 const convertUser = (result, json) => {
+  const playlists = json.user.pl || []
+  const image = json.user.img.indexOf('graph') > -1 ?
+                json.user.img :  
+                `${API_URL}${json.user.img}`
+
   return {
     currentUser: {
       _id: json.user._id,
       username: json.user.name,
-      image: `${API_URL}${json.user.img}`
+      image
     },
-    playlists: json.user.pl.map((playlist) => {return {_id: playlist.id
-                                                      ,name: playlist.name}}),
+    playlists: playlists.map((playlist) => {return {_id: playlist.id
+                                                   ,name: playlist.name}}),
     username: json.user.name,
     defaultPlaylist: {}, //TODO ??
  	  cookie: result.headers.get('set-cookie'),
   }
+}
+
+const jsonToUser = (result) => (json) => {
+  const cookie = result.headers.get('set-cookie')
+  if (json.user && cookie) {
+    return convertUser(result, json)
+  }
+
+  if (json.result.startsWith('nok')) {
+    if (json.result.indexOf('not found') > -1) {
+      return { error: 'Register on openwhyd.org' }
+    }
+
+    return { error: json.result }
+  }
+
+//  if (!cookie) return { error: 'No cookie returned by the server' }
+  return { error: json.error }
 }
 
 const emailLogin = (email, password) => {
@@ -100,13 +140,7 @@ const emailLogin = (email, password) => {
    includeUser: true
  })
  .then((result) => {
-	return result.json()
- 							 .then((json) => {
-                if (json.user) {
-                  return convertUser(result, json)
-                }
- 							  return { error: json.error }
- 							 })
+	return result.json().then(jsonToUser(result))
  })
  .catch(console.error)
 }
@@ -121,13 +155,7 @@ const facebookLogin = (facebookId, accessToken) => {
     includeUser: true
   })
   .then((result) => {
-	 return result.json()
- 							 .then((json) => {
-                if (json.user) {
-                  return convertUser(result, json)
-                }
- 							  return { error: json.error }
- 							 })
+	 return result.json().then(jsonToUser(result))
   })
   .catch((e) => {
     console.error(e)
@@ -280,6 +308,7 @@ const convertSearch = (limit) => {
       const image = item.img.search('http') > -1 ?
                     item.img :
                     `${API_URL}${item.img}`
+
       return {
         apiProvider: 'openwhyd',
         _id: item.id,
@@ -307,14 +336,17 @@ Meteor.methods({
 	'openwhyd.user.current.get': (cookie) => {
 		const url = `${API_URL}/api/user`
 
+    const image = json.img.indexOf('graph') > -1 ?
+                  json.img :  
+                  `${API_URL}${json.img}`
+
 		return getWithCookie(url, cookie)
 		          .then((json) => {
-                console.log(json)
 								return {
                   currentUser: {
                     _id: json._id,
                     username: json.name,
-                    image: `${API_URL}${json.img}`
+                    image
                   },
                   playlists: json.pl,
                   username: json.name,
@@ -378,7 +410,7 @@ Meteor.methods({
   'openwhyd.profile.stream.get': (limit, cookie) => {
     const url = `${API_URL}/?format=json&limit=${limit}`
 
-    return getWithCookie(url, cookie)
+    return getWithCookie(url, cookie, _.isArray)
 		          .then((json) => {
                 return {
                   tracks: json.map(convertTrack)
@@ -464,7 +496,6 @@ Meteor.methods({
     const url = `${API_URL}${openwhydUrl}?format=json`
 
     // TODO : convert from eId to URL
-    console.log('URL:', url)
     // FIXME : what to do if track cannot be found?
     // and why would i get a stranger result like this?
     // algolia index not up to date?
@@ -472,7 +503,6 @@ Meteor.methods({
     return get(url)
             .then((result) => result.json())
             .then((track) => {
-              console.log(track)
               return eIdToURL(track.eId.split('/'))
             })
             .catch(console.error)
@@ -519,8 +549,8 @@ Meteor.methods({
 		return get(url)
           		.then((result) => result.json())
 		          .then((json) => {
-								const image = json.img.search('facebook') > -1 ?
-															json.img :
+								const image = json.img.search('graph') > -1 ?
+															'http:' + json.img :
 															`${API_URL}${json.img}`
 
 								const coverImage = `${API_URL}${json.cvrImg}`

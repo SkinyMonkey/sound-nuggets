@@ -1,4 +1,12 @@
 const docCookies = {
+  removeAllItems: function () {
+    document.cookie.split(';').forEach((cookie) => {
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    })
+  },
+
 	itemExpired: function (sKey) {
     if (!sKey) { return null; }
 		const sCookie = document.cookie.split('; ')
@@ -48,12 +56,34 @@ const docCookies = {
   removeItem: function (sKey, sPath, sDomain) {
     if (!this.hasItem(sKey)) { return false; }
     document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
+
+    return true;
+  },
+
+  getRealKey: function (sKey) {
+    const begin = document.cookie.indexOf(sKey);
+    if (begin === -1) return false;
+
+    const end = document.cookie.slice(begin).indexOf('=');
+
+    return document.cookie.slice(begin).slice(0, end);
+  },
+
+  removeApproximateItem: function (sKey) {
+    if (!this.hasApproximateItem(sKey)) { return false; }
+    const realKey = this.getRealKey(sKey);
+    document.cookie = this.removeItem(realKey);
     return true;
   },
 
   hasItem: function (sKey) {
     if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
     return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+  },
+
+  hasApproximateItem: function (sKey) {
+    if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+    return document.cookie.indexOf(sKey) > -1
   },
 
   keys: function () {
