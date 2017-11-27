@@ -3,6 +3,7 @@ import { Panel, Col, Media } from 'react-bootstrap'
 
 import HotTracks from './HotTracks.jsx'
 import Donate from '../../components/Donate.jsx'
+import Patreon from '../../components/Patreon.jsx'
 
 // import Container from '../../components/Container.jsx'
 
@@ -21,6 +22,7 @@ export class Welcome extends Component {
       </Panel>
       </Col>
       <Donate/>
+      <Patreon/>
    </div>
   }
 }

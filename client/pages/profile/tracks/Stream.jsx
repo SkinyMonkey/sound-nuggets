@@ -7,6 +7,7 @@ import TrackList from './TrackList.jsx'
 import Container from '../../../components/Container.jsx'
 import SearchWrapper from '../../../components/SearchWrapper.jsx'
 import Donate from '../../../components/Donate.jsx'
+import Patreon from '../../../components/Patreon.jsx'
 
 import withMethodData from '../../../components/withMethodData.jsx'
 
@@ -18,6 +19,7 @@ const DummyContainer = (wrappedComponent) => {
       </div>
     </Col>
     <Donate/>
+    <Patreon/>
   </div>
 }
 

