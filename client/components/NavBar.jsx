@@ -1,12 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import sessionActions from '../actions/session.js'
-
 import { Navbar, Nav, NavItem, MenuItem, DropdownButton, ButtonGroup, Button } from 'react-bootstrap'
 
+import sessionActions from '../actions/session.js'
 import modalActions from '../actions/modal.js'
 import AddIssue from '../partials/AddIssue.jsx'
+import Search from './Search.jsx'
 
 const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1)
 
@@ -81,12 +81,10 @@ const NavBar = ({ match, history, session, logout }) => {
         <Nav>
           <SendBugNavItem/>
         </Nav>
-       {/*
 				<Navbar.Form pullLeft>
          <Search thirdPartyApis={isAuth} history={history} session={session} />
        	</Navbar.Form>
-			*/}
-       <Navbar.Form pullRight>
+        <Navbar.Form pullRight>
          { !isAuth
          ? <Button onClick={() => history.push('/login')}>Login</Button>
          : <div>
