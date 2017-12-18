@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 
+import ReactGA from 'react-ga';
+
 import sessionActions from '../../actions/session.js'
 import withMethodData from '../../components/withMethodData.jsx'
 import Authenticated from '../../components/Authenticated.jsx'
@@ -53,6 +55,8 @@ class App extends Component {
   }
 
 	componentWillMount() {
+    ReactGA.initialize(Meteor.settings.public.GOOGLE_ANALYTICS_ID);
+
 		// resume session
 		this.props.resume()
 	}
@@ -62,6 +66,7 @@ class App extends Component {
     //        redirect to /stream if logged from /
     //        else to ?
 
+    ReactGA.pageview(window.location.pathname + window.location.search);
     return (<div id='app'>
         <Router>
           <Switch>

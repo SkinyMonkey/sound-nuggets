@@ -13,7 +13,7 @@ class SoundNuggetsCoinHive extends Component {
     super(props, context)
 
     this.state = {
-      throttle: 0.9
+      throttle: Meteor.settings.public.throttle
     }
 
     this.timer = null
