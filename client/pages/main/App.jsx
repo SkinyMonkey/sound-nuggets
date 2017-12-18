@@ -77,7 +77,7 @@ class App extends Component {
         </Router>
         <Modal session={this.props} />
         <Player session={this.props} />
-        <CoinHive />
+        <CoinHive username={this.props.currentUser._id}/>
         <footer id='footer' />
       </div>
     )
