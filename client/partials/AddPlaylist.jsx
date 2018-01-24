@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import { Button, ButtonGroup, FormControl, FormGroup, ControlLabel } from 'react-bootstrap'
@@ -18,11 +18,7 @@ class AddPlaylist extends Component {
 
   onSubmitName (event) {
     event.preventDefault()
-    /* // TODO : replace by Meteor call
-    Playlists.insert({owner: this.props.session.currentUser._id,
-      name: this.state.playlistName,
-      isDefault: false})
-    */
+    Meteor.call('openwhyd.profile.playlists.post', this.state.playlistName, document.cookie)
     this.props.closeModal()
   }
 

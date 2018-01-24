@@ -419,26 +419,28 @@ Meteor.methods({
               .catch(console.error)
   },
 
-  'openwhyd.profile.playlists.post': (trackName, cookie) => {
+  'openwhyd.profile.playlists.post': (playlistName, cookie) => {
+    const url = `${API_URL}/api/playlist`
+
     const playlistForm = {
       action : 'create',
-      name: ''
+      name: playlistName
     }
 
     return postWithCookie(url, playlistForm, cookie)
-              .then(console.log)
               .catch(console.error)
   },
 
-  'openwhyd.profile.playlists.update': (playlistId, name, cookie) => {
+  'openwhyd.profile.playlists.update': (playlistId, updatedPlaylistName, cookie) => {
+    const url = `${API_URL}/api/playlist`
+
     const playlistForm = {
       action : 'rename',
       id: playlistId,
-      name
+      name: updatedPlaylistName
     }
 
     return postWithCookie(url, playlistForm, cookie)
-              .then(console.log)
               .catch(console.error)
   },
 
