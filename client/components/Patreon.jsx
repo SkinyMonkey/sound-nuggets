@@ -10,13 +10,19 @@ const Patreon = () => (<Col md={4}>
       </Col>
     </Media.Left>
     <Media.Body>
+      <p>Help me on
+        <a href='https://github.com/SkinyMonkey/sound-nuggets/'>
+        {" Github "}
+        </a> !
+      </p>
+ 
       <p>You can also support me on 
         <a href='https://www.patreon.com/user?u=8598416'>
         {" Patreon "}
         </a>
         :)
       </p>
-    </Media.Body>
+   </Media.Body>
   </Panel>
 </Col>)
 
