@@ -304,7 +304,7 @@ const getTrack = (openwhydUrl) => {
 const convertSearch = (limit) => {
   return (items, provider, type) => {
     if (!items) return []
-    return items.slice(0, limit).map((item) => {
+    return items.slice(0, limit).map((item, index) => {
       const image = item.img.search('http') > -1 ?
                     item.img :
                     `${API_URL}${item.img}`

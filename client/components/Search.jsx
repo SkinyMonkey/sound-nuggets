@@ -109,7 +109,7 @@ class Search extends Component {
       }))
     }
 
-    Promise.all(addItemCalls)
+    return Promise.all(addItemCalls)
            .then((items) => {
              return this.pSetState({items: [].concat.apply([], items)})
            })
@@ -168,6 +168,7 @@ class Search extends Component {
             return this.handleValue(this.state.value)
           })
           .catch((e) => {
+            console.log(e.message)
             return this.pSetState({
               error: e.message,
               step: ERROR
@@ -176,6 +177,9 @@ class Search extends Component {
       }
 
       this.inputTimer = setTimeout(doneTyping, DONETYPINGINTERVAL)
+    }
+    else {
+      this.setState({open: false})
     }
   }
 
@@ -193,10 +197,8 @@ class Search extends Component {
         .then(() => {
           if (item.type === 'track') {
             if (true) {
-              console.log('is a track')
 //            if (this.props.session.isAuth === true) {
               if (item.apiProvider === 'openwhyd') {
-                console.log('from openwhyd')
                 return this.callWithPromise('openwhyd.tracks.getOne', item.url)
                            .then((trackUrl) => {
                             return this.openAddTrackModal({
@@ -226,7 +228,10 @@ class Search extends Component {
                  ? item.name.slice(0, 45) + '...'
                  : item.name
 
-    return (<Media className={'search-item-' + isHighlighted} key={item.url} >
+    // Note : new Date is a hack as we don't have access
+    //        to a unique key here
+    return (<Media className={'search-item-' + isHighlighted}
+                   key={item._id + item.provider}>
       <Media.Left>
         <img style={{width: '24px', height: '24px'}} src={item.image} />
       </Media.Left>
@@ -260,14 +265,11 @@ class Search extends Component {
   renderMenu (items, value, style) {
     return <div id='menu-tracks'>
       <Panel>
-        {value === '' ? (
-          <div style={{ padding: 6 }}>Type something into the input</div>
-              ) : this.state.step === LOADING ||
-                  this.state.step === TYPING ? (
-                    <div style={{ padding: 6 }}>Loading...</div>
-              ) : items.length === 0 ? (
-                <div style={{ padding: 6 }}>No matches for {value}</div>
-              ) : this.renderItems(items)}
+        {this.state.step === LOADING && items.length === 0 ? (
+          <div style={{ padding: 6 }}>Loading...</div>
+         ) : items.length === 0 ? (
+          <div style={{ padding: 6 }}>No matches for {value}</div>
+         ) : this.renderItems(items)}
       </Panel>
     </div>
   }
