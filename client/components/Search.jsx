@@ -7,6 +7,7 @@ import Autocomplete from 'react-autocomplete'
 import { Panel, Media } from 'react-bootstrap'
 
 import modalActions from '../actions/modal.js'
+import playerActions from '../actions/player.js'
 
 import AddTrack from '../partials/AddTrack.jsx'
 import EditTrack from '../partials/EditTrack.jsx'
@@ -196,23 +197,38 @@ class Search extends Component {
     this.pSetState({open: false, value: ''})
         .then(() => {
           if (item.type === 'track') {
-            if (true) {
-//            if (this.props.session.isAuth === true) {
-              if (item.apiProvider === 'openwhyd') {
-                return this.callWithPromise('openwhyd.tracks.getOne', item.url)
-                           .then((trackUrl) => {
-                            return this.openAddTrackModal({
-                              ...item,
-                              url: trackUrl
-                            })
-                           })
-              }
-              return this.openAddTrackModal(item)
+            if (item.apiProvider === 'openwhyd') {
+              console.log(item.url)
+              return this.callWithPromise('openwhyd.tracks.getOne', item.url)
+                         .then((trackUrl) => {
+                           console.log(trackUrl)
+
+                           return this.props.session.isAuth ?
+                                  this.openAddTrackModal({
+                                   ...item,
+                                   url: trackUrl
+                                   })
+                                  :
+                                  this.props.loadPlaylist({ // Load the track
+                                    url: trackUrl,
+                                    playlist: [{...item, url: trackUrl}],
+                                    tracklistURL: '/',
+                                    playing: true,
+                                  })
+                         })
+                         .catch(console.error)
             }
-            else {
-              // add to player?
-            }
+            return (this.props.session.isAuth ? 
+                   this.openAddTrackModal(item) :
+                   this.props.loadPlaylist({
+                    url: item.url,
+                    playlist: [{...item, url: trackUrl}],
+                    tracklistURL: '/',
+                    playing: true,
+                   }))
+                   .catch(console.error)
           }
+
           this.props.history.push(item.url)
         })
         .catch((e) => {
@@ -302,4 +318,9 @@ class Search extends Component {
 Search.propTypes = {
 }
 
-export default connect(null, modalActions)(Search)
+const actionProps = {
+  ...modalActions,
+  ...playerActions,
+};
+
+export default connect(null, actionProps)(Search)
