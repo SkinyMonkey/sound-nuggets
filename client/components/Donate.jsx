@@ -5,7 +5,7 @@ const Donate = () => (<Col md={4}>
   <Panel id='donate'>
     <h4>💓 Openwhyd needs you!</h4>
     <Media.Left>
-      <img src='/img/github-octocat.png'height={64} width={64}/>
+      <img src='/img/github-octocat.png' height={64} width={64}/>
     </Media.Left>
     <Media.Body>
       <p>Help us keep Openwhyd free, independant and without ads.</p>

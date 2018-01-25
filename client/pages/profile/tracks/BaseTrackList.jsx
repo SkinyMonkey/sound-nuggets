@@ -89,10 +89,12 @@ const BaseTrackList = (ElementComponent) => {
           this.props.tracklistURL !== this.currentTracklistURL()) {
         this.props.setPristine(false)
             .then(() => {
-              this.props.loadPlaylist({playlist: this.props.tracks,
+              this.props.loadPlaylist({
+                playlist: this.props.tracks,
                 url,
                 tracklistURL: this.currentTracklistURL(),
-                playing: true})
+                playing: true
+              })
             })
             .then(() => {
               loadMoreIfEnd()

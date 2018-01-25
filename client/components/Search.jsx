@@ -169,7 +169,6 @@ class Search extends Component {
             return this.handleValue(this.state.value)
           })
           .catch((e) => {
-            console.log(e.message)
             return this.pSetState({
               error: e.message,
               step: ERROR
@@ -198,11 +197,8 @@ class Search extends Component {
         .then(() => {
           if (item.type === 'track') {
             if (item.apiProvider === 'openwhyd') {
-              console.log(item.url)
               return this.callWithPromise('openwhyd.tracks.getOne', item.url)
                          .then((trackUrl) => {
-                           console.log(trackUrl)
-
                            return this.props.session.isAuth ?
                                   this.openAddTrackModal({
                                    ...item,
