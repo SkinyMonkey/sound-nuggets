@@ -196,45 +196,39 @@ class Search extends Component {
   onSelectItem (value, item) {
     this.pSetState({open: false, value: ''})
         .then(() => {
-
-          // TODO : clean by factorising
-          //        checks and calls
           if (item.type === 'track') {
-            if (this.props.session.isAuth === true) {
-              if (item.apiProvider === 'openwhyd') {
-                return this.callWithPromise('openwhyd.tracks.getOne', item.url)
-                           .then((trackUrl) => {
-                            return this.openAddTrackModal({
-                              ...item,
-                              url: trackUrl
-                            })
-                           })
-              }
-              return this.openAddTrackModal(item)
-            }
-            else {
-              if (item.apiProvider === 'openwhyd') {
-                return this.callWithPromise('openwhyd.tracks.getOne', item.url)
-                           .then((trackUrl) => {
-                            return this.props.loadPlaylist({
-                              url: trackUrl,
-                              playlist: [{...item, url: trackUrl}],
-                              tracklistURL: '/',
-                              playing: true,
-                            })
-                           })
-                           .catch(console.error)
-              }
+            if (item.apiProvider === 'openwhyd') {
+              console.log(item.url)
+              return this.callWithPromise('openwhyd.tracks.getOne', item.url)
+                         .then((trackUrl) => {
+                           console.log(trackUrl)
 
-              return this.props.loadPlaylist({
-                url: item.url,
-                playlist: [{...item, url: trackUrl}],
-                tracklistURL: '/',
-                playing: true,
-              })
-              .catch(console.error)
+                           return this.props.session.isAuth ?
+                                  this.openAddTrackModal({
+                                   ...item,
+                                   url: trackUrl
+                                   })
+                                  :
+                                  this.props.loadPlaylist({ // Load the track
+                                    url: trackUrl,
+                                    playlist: [{...item, url: trackUrl}],
+                                    tracklistURL: '/',
+                                    playing: true,
+                                  })
+                         })
+                         .catch(console.error)
             }
+            return (this.props.session.isAuth ? 
+                   this.openAddTrackModal(item) :
+                   this.props.loadPlaylist({
+                    url: item.url,
+                    playlist: [{...item, url: trackUrl}],
+                    tracklistURL: '/',
+                    playing: true,
+                   }))
+                   .catch(console.error)
           }
+
           this.props.history.push(item.url)
         })
         .catch((e) => {
