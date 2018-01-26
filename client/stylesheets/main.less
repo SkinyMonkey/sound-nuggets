@@ -326,6 +326,25 @@ input#search-wrapper:extend(.search-icon) {
   color: #337ab7;
 }
 
+#add-track {
+  .status {
+    width: 108px;
+    height: 108px;
+    margin-top: 125px;
+    margin-left: 185px;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .play:extend(.status) {
+    background: url('/img/play-big.png') no-repeat center center;
+  }
+
+  .pause:extend(.status) {
+    background: url('/img/pause-big.png') no-repeat center center;
+  }
+}
+
 // Tracks
 #tracks {
   .media {

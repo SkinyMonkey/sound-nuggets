@@ -61,9 +61,7 @@ class Playlist extends Component {
               {playlist.name}
             </Link>
           </Media.Heading>
-          <p>
-            Number of tracks
-          </p>
+          <p>{playlist.tracksNbr} tracks</p>
           {playlistControl}
         </Media.Body>
       </Media.ListItem>

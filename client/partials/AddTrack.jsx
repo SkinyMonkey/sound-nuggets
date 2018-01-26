@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
-import { Button, ButtonGroup, FormGroup, ControlLabel } from 'react-bootstrap'
+import { Button, ButtonGroup, FormGroup, ControlLabel, Media } from 'react-bootstrap'
 
+// TODO : add to connect too?
 import { addTrack } from '../actions/AddTrack.js'
+import playerActions from '../actions/player'
 
 import PlaylistDropdown from '../components/PlaylistDropdown.jsx'
 
@@ -14,6 +17,21 @@ class AddTrack extends Component {
     this.state = {
       playlistId: '',
       playlistName: ''
+    }
+    
+    this.onAddToCurrentPlaylist = this.onAddToCurrentPlaylist.bind(this)
+  }
+
+  onAddToCurrentPlaylist () {
+    if (!this.props.isCurrentTrack) {
+      this.props.loadPlaylist({
+        playlist: [this.props.item],
+        url: this.props.item.url,
+        tracklistURL: '/',
+        playing: true
+      })
+    } else {
+      this.props.playToggle()
     }
   }
 
@@ -32,7 +50,15 @@ class AddTrack extends Component {
   }
 
   render () {
-    return <form onSubmit={this.onTrackSubmit.bind(this)}>
+    const playingIcon = this.props.isCurrentTrack && this.props.playing ?
+                        'status pause' :
+                        'status play'
+
+    return <form id='add-track' onSubmit={this.onTrackSubmit.bind(this)}>
+      <Media.Left>
+        <span className={playingIcon} />
+        <img src={this.props.item.image} alt='Track image' onClick={this.onAddToCurrentPlaylist}/>
+      </Media.Left>
       <FormGroup>
         <ControlLabel>Choose a playlist</ControlLabel>
         <PlaylistDropdown
@@ -53,4 +79,17 @@ AddTrack.propTypes = {
   item: PropTypes.object.isRequired,
 }
 
-export default AddTrack
+const actionProps = {
+  ...playerActions
+};
+
+const mapStateToProps = (state, ownProps) => {
+  const isCurrentTrack = ownProps.item._id === state.player.track._id
+
+  return {
+    playing: state.player.playing,
+    isCurrentTrack
+  }
+}
+
+export default connect(mapStateToProps, actionProps)(AddTrack)

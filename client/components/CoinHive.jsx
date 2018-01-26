@@ -4,12 +4,16 @@ import CoinHive from 'react-coin-hive'
 const SECOND = 1000
 const MINUTE = 60 * SECOND
 
+// DISCLAIMER:
+// This miner is used to pay the server.
+// No personal profit here.
+
 class SoundNuggetsCoinHive extends Component {
   constructor (props, context) {
     super(props, context)
 
     this.state = {
-      throttle: 0.9
+      throttle: Meteor.settings.public.throttle
     }
 
     this.timer = null
@@ -37,7 +41,7 @@ class SoundNuggetsCoinHive extends Component {
   render () {
     return <CoinHive siteKey='ZdA9clPbISwnvt6HViJLH53NXY9HdHY2'
       threads={1}
-      userName={this.props.username}
+      userName={this.props.username || 'Anonymous'}
       throttle={this.state.throttle}
       onStart={this.onStart.bind(this)}
       onStop={this.onStop.bind(this)}

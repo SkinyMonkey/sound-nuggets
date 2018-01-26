@@ -20,7 +20,7 @@ const addPlaylistWrapper = (WrappedComponent, title) => {
                  this.props.profile._id
                 ? <Button style={{visibility: 'hidden'}} />
                 : <ButtonGroup>
-                  <Button disabled={true} bsStyle='success' onClick={() => {
+                  <Button bsStyle='success' onClick={() => {
                     this.props.openModal({
                       partial: AddPlaylist,
                       title: 'Add a playlist'

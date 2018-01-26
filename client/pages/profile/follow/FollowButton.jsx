@@ -4,8 +4,6 @@ import { withTracker } from 'meteor/react-meteor-data'
 
 import { Button } from 'react-bootstrap'
 
-import { Follows } from '../../../../imports/api/follows.js'
-
 class FollowButton extends Component {
   constructor (props, context) {
     super(props, context)

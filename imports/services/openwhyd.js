@@ -304,7 +304,7 @@ const getTrack = (openwhydUrl) => {
 const convertSearch = (limit) => {
   return (items, provider, type) => {
     if (!items) return []
-    return items.slice(0, limit).map((item) => {
+    return items.slice(0, limit).map((item, index) => {
       const image = item.img.search('http') > -1 ?
                     item.img :
                     `${API_URL}${item.img}`
@@ -419,26 +419,28 @@ Meteor.methods({
               .catch(console.error)
   },
 
-  'openwhyd.profile.playlists.post': (trackName, cookie) => {
+  'openwhyd.profile.playlists.post': (playlistName, cookie) => {
+    const url = `${API_URL}/api/playlist`
+
     const playlistForm = {
       action : 'create',
-      name: ''
+      name: playlistName
     }
 
     return postWithCookie(url, playlistForm, cookie)
-              .then(console.log)
               .catch(console.error)
   },
 
-  'openwhyd.profile.playlists.update': (playlistId, name, cookie) => {
+  'openwhyd.profile.playlists.update': (playlistId, updatedPlaylistName, cookie) => {
+    const url = `${API_URL}/api/playlist`
+
     const playlistForm = {
       action : 'rename',
       id: playlistId,
-      name
+      name: updatedPlaylistName
     }
 
     return postWithCookie(url, playlistForm, cookie)
-              .then(console.log)
               .catch(console.error)
   },
 
@@ -484,7 +486,7 @@ Meteor.methods({
               return [
                 ...limitedConvertSearch(json.results.user, 'user', 'user'),
                 ...limitedConvertSearch(json.results.track, 'track', 'track'),
-                  ...limitedConvertSearch(json.results.post, 'post', 'track'),
+                ...limitedConvertSearch(json.results.post, 'post', 'track'),
                 ...limitedConvertSearch(json.results.playlist, 'playlist', 'playlist'),
               ]
             })
@@ -495,7 +497,6 @@ Meteor.methods({
   'openwhyd.tracks.getOne': (openwhydUrl) => {
     const url = `${API_URL}${openwhydUrl}?format=json`
 
-    // TODO : convert from eId to URL
     // FIXME : what to do if track cannot be found?
     // and why would i get a stranger result like this?
     // algolia index not up to date?
@@ -503,7 +504,7 @@ Meteor.methods({
     return get(url)
             .then((result) => result.json())
             .then((track) => {
-              return eIdToURL(track.eId.split('/'))
+              return eIdToURL(track.data.eId.split('/'))
             })
             .catch(console.error)
   },
@@ -549,11 +550,13 @@ Meteor.methods({
 		return get(url)
           		.then((result) => result.json())
 		          .then((json) => {
-								const image = json.img.search('graph') > -1 ?
+								const image = !json.img ? '/img/defaultAvatar.jpg' :
+                              json.img.search('graph') > -1 ?
 															'http:' + json.img :
 															`${API_URL}${json.img}`
 
-								const coverImage = `${API_URL}${json.cvrImg}`
+								const coverImage = !json.cvrImg ? '/img/defaultCover.jpg' :
+                                   `${API_URL}${json.cvrImg}`
 
 								return {
 									profileId,
@@ -566,7 +569,7 @@ Meteor.methods({
 										biography: json.bio,
 										stats: {
 											tracks: json.nbPosts,
-											playlists: json.pl.length,
+											playlists: json.pl ? json.pl.length : 0,
 											followers: json.nbSubscribers,
 											following: json.nbSubscriptions,	
 										}

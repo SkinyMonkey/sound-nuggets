@@ -7,6 +7,7 @@ import Autocomplete from 'react-autocomplete'
 import { Panel, Media } from 'react-bootstrap'
 
 import modalActions from '../actions/modal.js'
+import playerActions from '../actions/player.js'
 
 import AddTrack from '../partials/AddTrack.jsx'
 import EditTrack from '../partials/EditTrack.jsx'
@@ -109,7 +110,7 @@ class Search extends Component {
       }))
     }
 
-    Promise.all(addItemCalls)
+    return Promise.all(addItemCalls)
            .then((items) => {
              return this.pSetState({items: [].concat.apply([], items)})
            })
@@ -177,6 +178,9 @@ class Search extends Component {
 
       this.inputTimer = setTimeout(doneTyping, DONETYPINGINTERVAL)
     }
+    else {
+      this.setState({open: false})
+    }
   }
 
   openAddTrackModal(item) {
@@ -192,25 +196,35 @@ class Search extends Component {
     this.pSetState({open: false, value: ''})
         .then(() => {
           if (item.type === 'track') {
-            if (true) {
-              console.log('is a track')
-//            if (this.props.session.isAuth === true) {
-              if (item.apiProvider === 'openwhyd') {
-                console.log('from openwhyd')
-                return this.callWithPromise('openwhyd.tracks.getOne', item.url)
-                           .then((trackUrl) => {
-                            return this.openAddTrackModal({
-                              ...item,
-                              url: trackUrl
-                            })
-                           })
-              }
-              return this.openAddTrackModal(item)
+            if (item.apiProvider === 'openwhyd') {
+              return this.callWithPromise('openwhyd.tracks.getOne', item.url)
+                         .then((trackUrl) => {
+                           return this.props.session.isAuth ?
+                                  this.openAddTrackModal({
+                                   ...item,
+                                   url: trackUrl
+                                   })
+                                  :
+                                  this.props.loadPlaylist({ // Load the track
+                                    url: trackUrl,
+                                    playlist: [{...item, url: trackUrl}],
+                                    tracklistURL: '/',
+                                    playing: true,
+                                  })
+                         })
+                         .catch(console.error)
             }
-            else {
-              // add to player?
-            }
+            return (this.props.session.isAuth ? 
+                   this.openAddTrackModal(item) :
+                   this.props.loadPlaylist({
+                    url: item.url,
+                    playlist: [{...item, url: trackUrl}],
+                    tracklistURL: '/',
+                    playing: true,
+                   }))
+                   .catch(console.error)
           }
+
           this.props.history.push(item.url)
         })
         .catch((e) => {
@@ -226,7 +240,10 @@ class Search extends Component {
                  ? item.name.slice(0, 45) + '...'
                  : item.name
 
-    return (<Media className={'search-item-' + isHighlighted} key={item.url} >
+    // Note : new Date is a hack as we don't have access
+    //        to a unique key here
+    return (<Media className={'search-item-' + isHighlighted}
+                   key={item._id + item.provider}>
       <Media.Left>
         <img style={{width: '24px', height: '24px'}} src={item.image} />
       </Media.Left>
@@ -260,14 +277,11 @@ class Search extends Component {
   renderMenu (items, value, style) {
     return <div id='menu-tracks'>
       <Panel>
-        {value === '' ? (
-          <div style={{ padding: 6 }}>Type something into the input</div>
-              ) : this.state.step === LOADING ||
-                  this.state.step === TYPING ? (
-                    <div style={{ padding: 6 }}>Loading...</div>
-              ) : items.length === 0 ? (
-                <div style={{ padding: 6 }}>No matches for {value}</div>
-              ) : this.renderItems(items)}
+        {this.state.step === LOADING && items.length === 0 ? (
+          <div style={{ padding: 6 }}>Loading...</div>
+         ) : items.length === 0 ? (
+          <div style={{ padding: 6 }}>No matches for {value}</div>
+         ) : this.renderItems(items)}
       </Panel>
     </div>
   }
@@ -300,4 +314,9 @@ class Search extends Component {
 Search.propTypes = {
 }
 
-export default connect(null, modalActions)(Search)
+const actionProps = {
+  ...modalActions,
+  ...playerActions,
+};
+
+export default connect(null, actionProps)(Search)
