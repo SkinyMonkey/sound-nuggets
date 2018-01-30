@@ -99,14 +99,23 @@ class Track extends Component {
 
     const image = track.image || 'https://i.ytimg.com/vi/T0Jqdjbed40/mqdefault.jpg'
 
+    const positionClass = 'position ' + (track.position === '=' ?
+                                         'equal' :
+                                         track.position === '>' ?
+                                         'up' :
+                                         'down')
+
     return (
       <Media.ListItem className={playingBorder}>
+        <Media.Left>
+          <div className={positionClass}>{track.position}</div>
+        </Media.Left>
         <Media.Left>
           <span className={playingIcon} />
           <img width='110' height='110' src={image} alt='Track image' onClick={this.onAddToCurrentPlaylist} />
         </Media.Left>
         <Media.Body>
-          <Media.Heading> {track.position} {track.name}</Media.Heading>
+          <Media.Heading> {track.name}</Media.Heading>
           <Media>
             <Media.Left>
               <Link key={'ownerImage' + track._id}
