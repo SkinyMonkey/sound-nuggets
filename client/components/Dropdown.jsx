@@ -46,7 +46,6 @@ class Dropdown extends Component {
         <DropdownButton key={id} id={id} onSelect={this.onSelect.bind(this)} value={value} title={valueName}>
           {options.map(this.option(id, keyField, valueField))}
         </DropdownButton>)
-
   }
 }
 
