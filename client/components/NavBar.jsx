@@ -58,7 +58,7 @@ const NavBar = ({ match, history, session, logout }) => {
     <Navbar fixedTop collapseOnSelect id='navbar'>
       <Navbar.Header>
         <Navbar.Brand>
-          Demo
+          Sound nuggets
         </Navbar.Brand>
         <Navbar.Toggle />
       </Navbar.Header>
