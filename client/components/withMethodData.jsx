@@ -31,7 +31,8 @@ const withMethodData = (getData) => {
       }
  
       render () {
-        return !this.state.initialized ? <div>Loading</div> :
+        return !this.state.initialized ?
+               <div className='loading'>Loading</div> :
                <ComposedComponent {...this.props}
                                   {...this.state}
                                   {...this.state.response}/>
