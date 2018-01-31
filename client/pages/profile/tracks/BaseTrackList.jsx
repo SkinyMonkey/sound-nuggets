@@ -10,7 +10,7 @@ import playerActions from '../../../actions/player'
 import { Media, Button } from 'react-bootstrap'
 
 const BaseTrackList = (ElementComponent) => {
-  return class BaseTrackList extends Component {
+  class __BaseTrackList extends Component {
     constructor (props, context) {
       super(props, context)
 
@@ -131,12 +131,14 @@ const BaseTrackList = (ElementComponent) => {
     }
   }
 
-  BaseTrackList.propTypes = {
-    profileId: PropTypes.string.isRequired,
+  __BaseTrackList.propTypes = {
+    profileId: PropTypes.string,
     session: PropTypes.object.isRequired,
     tracks: PropTypes.arrayOf(PropTypes.object).isRequired,
     limit: PropTypes.number.isRequired
   }
+
+  return __BaseTrackList
 }
 
 export default BaseTrackList
