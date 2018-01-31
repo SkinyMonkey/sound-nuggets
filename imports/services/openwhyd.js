@@ -73,7 +73,7 @@ const checkPredicate = (predicate) => {
 }
 
 const getWithCookie = (url, cookie, predicate = emptyPredicate) => {
-  const headers = {'Cookie': cookie}
+  const headers = cookie ? {'Cookie': cookie} : {}
 
   return get(url, {headers})
             .then((result) => result.json())
@@ -81,7 +81,7 @@ const getWithCookie = (url, cookie, predicate = emptyPredicate) => {
 }
 
 const postWithCookie = (url, data, cookie, predicate = emptyPredicate) => {
-  const headers = {'Cookie': cookie}
+  const headers = cookie ? {'Cookie': cookie} : {}
 
   return post(url, data, {headers})
             .then((result) => result.json())
@@ -459,17 +459,15 @@ Meteor.methods({
     const query = `?action=insert&tId=${followedId}&_=${Date.now()}`
     const url = `${API_URL}/api/follow${query}`
 
-    return getWithCookie(url)
-              .then(console.log)
+    return getWithCookie(url, cookie)
               .catch(console.error)
   },
 
-  'openwhyd.profile.following.delete': (profileId, limit) => {
+  'openwhyd.profile.following.delete': (followedId, cookie) => {
     const query = `?action=delete&tId=${followedId}&_=${Date.now()}`
     const url = `${API_URL}/api/follow${query}`
 
-    return getWithCookie(url)
-              .then(console.log)
+    return getWithCookie(url, cookie)
               .catch(console.error)
   },
 
@@ -544,11 +542,10 @@ Meteor.methods({
 	},
 
   // user
-	'openwhyd.profile.user.get': (profileId) => {
-		const url = `${API_URL}/api/user?id=${profileId}&includeSubscr=true&countPosts=true`
+	'openwhyd.profile.user.get': (profileId, cookie) => {
+		const url = `${API_URL}/api/user?id=${profileId}&includeSubscr=true&isSubscr=true&countPosts=true`
 
-		return get(url)
-          		.then((result) => result.json())
+		return getWithCookie(url, cookie)
 		          .then((json) => {
 								const image = !json.img ? '/img/defaultAvatar.jpg' :
                               json.img.search('graph') > -1 ?
@@ -567,6 +564,7 @@ Meteor.methods({
 										coverImage,
 										localisation: json.loc,
 										biography: json.bio,
+                    followed: json.isSubscribing,
 										stats: {
 											tracks: json.nbPosts,
 											playlists: json.pl ? json.pl.length : 0,

@@ -67,7 +67,7 @@ const Profile = ({ session, match, history, location, profile }) => {
 const userFromAPI = withMethodData(({ match }, done) => {
   const profileId = match.params.profileId
 
-  Meteor.call('openwhyd.profile.user.get', profileId, done);
+  Meteor.call('openwhyd.profile.user.get', profileId, document.cookie, done);
 })
 
 export default userFromAPI(Profile)

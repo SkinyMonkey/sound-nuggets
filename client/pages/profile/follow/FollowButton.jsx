@@ -20,47 +20,23 @@ class FollowButton extends Component {
     const currentUser = this.props.currentUser
     const followed = this.props.followed
 
-    Follows.insert({
-      owner: currentUser._id,
-      followed: followed._id,
-      ownerName: currentUser.profile.username,
-      ownerImage: currentUser.profile.image,
-      followedName: followed.profile.username,
-      followedImage: followed.profile.image
-    })
+    Meteor.call('openwhyd.profile.following.post', this.props.followed._id, document.cookie)
 
-    this.setState({following: true})
+    this.setState({ following: true })
   }
 
   unfollow (event) {
-    Follows.remove(this.props.following._id)
-    this.setState({following: true})
+    Meteor.call('openwhyd.profile.following.delete', this.props.followed._id, document.cookie)
+
+    this.setState({ following: false })
   }
 
   render () {
-    const callback = this.props.following ? this.unfollow : this.follow
-    const content = this.props.following ? 'Following' : 'Follow'
+    const callback = this.state.following ? this.unfollow : this.follow
+    const content = this.state.following ? 'Following' : 'Follow'
+
     return <Button onClick={callback}>{content}</Button>
   }
 }
 
-// currentUser           : the currentUser
-// profileId header      : the followedId is the profileId of the profile we are visiting
-// profileId followers   : the followedId is the id of the follow.owner we aim
-// profileId following   : the followedId is the id of the follow.followed we aim
-
-// followed               : the followed user
-// following              : the entry of follow between the currentUser and the followed
-
-// TODO : how to do that with openwhyd?
-export default withTracker(({ currentUser, followedId }) => {
-  const followed = Meteor.users.findOne({ _id: followedId }) || {}
-  const following = Follows.findOne({ owner: currentUser._id,
-    followed: followed._id})
-
-  return {
-    currentUser,
-    followed,
-    following
-  }
-})(FollowButton)
+export default FollowButton

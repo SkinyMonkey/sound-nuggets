@@ -34,10 +34,11 @@ const Header = ({ session, profile }) => {
   const isAuth = session.isAuth
   const ownPage = session.isAuth && session.currentUser._id === profile._id
   const controlContent = ownPage
-                          ? '' //<EditProfile />
+                          ? <EditProfile />
                           : !isAuth ? ''
-                          : '' /*<FollowButton currentUser={session.currentUser}
-                            followedId={profile._id} />*/
+                          : <FollowButton currentUser={session.currentUser}
+                                          followed={profile}
+                                          following={!profile.isSubscribing}/>
 
   const coverImage = profile.coverImage || '/img/defaultCover.jpg'
   const avatar = profile.image || '/img/defaultAvatar.png'
