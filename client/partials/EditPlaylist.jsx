@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
 import { Button, ButtonGroup, ButtonToolbar, FormControl, FormGroup, ControlLabel } from 'react-bootstrap'
 
 import Confirm from './Confirm.jsx'
+
+import flashMessagesActions from '../actions/flash_messages'
 
 class EditPlaylist extends Component {
   constructor (props, context) {
@@ -25,6 +28,12 @@ class EditPlaylist extends Component {
     Playlists.update(this.props.playlist._id
                     , {$set: {name: this.state.playlistName}})
     */
+
+    this.props.flashSuccess('Playlist modified')
+    setTimeout(() => {
+        this.props.clearFlashMessage()
+    }, 5000)
+
     this.props.closeModal()
   }
 
@@ -72,4 +81,8 @@ EditPlaylist.propTypes = {
   session: PropTypes.object.isRequired
 }
 
-export default EditPlaylist
+const actionProps = {
+  ...flashMessagesActions,
+}
+
+export default connect(null, actionProps)(EditPlaylist)

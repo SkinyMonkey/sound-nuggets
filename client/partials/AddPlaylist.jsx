@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
 import { Button, ButtonGroup, FormControl, FormGroup, ControlLabel } from 'react-bootstrap'
+
+import flashMessagesActions from '../actions/flash_messages'
 
 class AddPlaylist extends Component {
   constructor (props, context) {
@@ -19,6 +22,12 @@ class AddPlaylist extends Component {
   onSubmitName (event) {
     event.preventDefault()
     Meteor.call('openwhyd.profile.playlists.post', this.state.playlistName, document.cookie)
+
+    this.props.flashSuccess('Playlist added')
+    setTimeout(() => {
+        this.props.clearFlashMessage()
+    }, 5000)
+
     this.props.closeModal()
   }
 
@@ -44,4 +53,8 @@ AddPlaylist.propTypes = {
 
 // TODO : use redux form?
 
-export default AddPlaylist
+const actionProps = {
+  ...flashMessagesActions,
+}
+
+export default connect(null, actionProps)(AddPlaylist)

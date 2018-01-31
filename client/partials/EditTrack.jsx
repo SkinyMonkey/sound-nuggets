@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
 import { Button, ButtonGroup, ButtonToolbar, ControlLabel, FormGroup } from 'react-bootstrap'
 
+import flashMessagesActions from '../actions/flash_messages'
 import Confirm from './Confirm.jsx'
 
 import PlaylistDropdown from '../components/PlaylistDropdown.jsx'
@@ -30,6 +32,12 @@ class EditTrack extends Component {
 
     Meteor.call('openwhyd.profile.tracks.update', this.props.track, playlistId, playlistName, document.cookie)
 
+    this.props.flashSuccess('Track updated')
+    setTimeout(() => {
+        this.props.clearFlashMessage()
+    }, 5000)
+
+
     this.props.closeModal()
   }
 
@@ -43,6 +51,11 @@ class EditTrack extends Component {
         event.preventDefault()
 
         Meteor.call('openwhyd.profile.tracks.delete', this.props.track._id, document.cookie)
+
+        this.props.flashDanger('Track removed')
+        setTimeout(() => {
+            this.props.clearFlashMessage()
+        }, 5000)
 
         this.props.closeModal()
       }
@@ -77,4 +90,8 @@ EditTrack.propTypes = {
   track: PropTypes.object.isRequired,
 }
 
-export default EditTrack
+const actionProps = {
+  ...flashMessagesActions,
+}
+
+export default connect(null, actionProps)(EditTrack)

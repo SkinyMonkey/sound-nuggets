@@ -3,8 +3,15 @@ import { connect } from 'react-redux'
 import { Alert } from 'react-bootstrap'
 
 const FlashMessage = ({flashMessage, type}) => {
+  const style = {
+    position: 'fixed',
+    width: '100%',
+    textAlign: 'center',
+    zIndex: 1000
+  }
+
   return (!flashMessage ? null
-          : <Alert bsStyle={type}>
+          : <Alert bsStyle={type} style={style}>
             <p>{flashMessage}</p>
           </Alert>)
 }

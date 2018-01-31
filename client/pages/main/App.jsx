@@ -11,6 +11,7 @@ import CoinHive from '../../components/CoinHive.jsx'
 
 import Modal from '../../components/Modal.jsx'
 import NavBar from '../../components/NavBar.jsx'
+import FlashMessage from '../../components/FlashMessage.jsx'
 import Player from '../../components/Player.jsx'
 
 import Profile from '../profile/index.jsx'
@@ -30,6 +31,7 @@ const MainWithNavBar = (Component, session) => {
     session = session === undefined ? props.session : session
     return <div>
       <NavBar match={props.match} session={session} history={props.history} />
+      <FlashMessage />
       <main id='main'>
         {React.createElement(Component, {...props, session})}
       </main>

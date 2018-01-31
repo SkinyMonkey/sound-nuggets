@@ -7,6 +7,7 @@ import { Button, ButtonGroup, FormGroup, ControlLabel, Media } from 'react-boots
 // TODO : add to connect too?
 import { addTrack } from '../actions/AddTrack.js'
 import playerActions from '../actions/player'
+import flashMessagesActions from '../actions/flash_messages'
 
 import PlaylistDropdown from '../components/PlaylistDropdown.jsx'
 
@@ -46,6 +47,11 @@ class AddTrack extends Component {
 
     addTrack(this.state.playlistId, this.state.playlistName, this.props.item)
 
+    this.props.flashSuccess('Track added')
+    setTimeout(() => {
+        this.props.clearFlashMessage()
+    }, 5000)
+
     this.props.closeModal()
   }
 
@@ -80,8 +86,9 @@ AddTrack.propTypes = {
 }
 
 const actionProps = {
+  ...flashMessagesActions,
   ...playerActions
-};
+}
 
 const mapStateToProps = (state, ownProps) => {
   const isCurrentTrack = ownProps.item._id === state.player.track._id
