@@ -262,6 +262,7 @@ const convertFollower = (follower) => {
   return {
     owner: follower.uId,
     ownerName: follower.uNm,
+    followed: follower.isSubscribing,
     ownerImage: `${API_URL}/img/u/${follower.uId}?width=100&height=100`
   }
 }
@@ -620,11 +621,10 @@ Meteor.methods({
   },
 
   // followers
-  'openwhyd.profile.followers.get': (profileId, limit, filter) => {
-    const url = `${API_URL}/api/follow/fetchFollowers/${profileId}`
+  'openwhyd.profile.followers.get': (profileId, cookie, limit, filter) => {
+    const url = `${API_URL}/api/follow/fetchFollowers/${profileId}?isSubscr=true`
 
-		return get(url)
-          		.then((result) => result.json())
+		return getWithCookie(url, cookie)
               .then((json) => {
                 return {
                   profileId,
@@ -636,11 +636,10 @@ Meteor.methods({
   },
 
   // following
-  'openwhyd.profile.following.get': (profileId, limit, filter) => {
-    const url = `${API_URL}/api/follow/fetchFollowing/${profileId}`
+  'openwhyd.profile.following.get': (profileId, cookie, limit, filter) => {
+    const url = `${API_URL}/api/follow/fetchFollowing/${profileId}?isSubscr=true`
 
-		return get(url)
-          		.then((result) => result.json())
+		return getWithCookie(url, cookie)
 		          .then((json) => {
                 return {
                   profileId,

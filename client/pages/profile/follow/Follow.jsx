@@ -45,9 +45,10 @@ export default class Follow extends Component {
           <div className='control'>
             { !session.isAuth ||
                session.currentUser._id === followedId ? ''
-              : ''/*<FollowButton currentUser={session.currentUser}
-                followedId={followedId}
-                            />*/
+              : <FollowButton currentUser={session.currentUser}
+                              followed={follow}
+                              following={!follow.isSubscribing}
+                />
             }
           </div>
         </Media.Body>

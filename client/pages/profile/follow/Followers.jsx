@@ -9,7 +9,7 @@ const followersFromAPI = withMethodData((props, done) => {
   const profileId = props.match.params.profileId
   const { limit, filter } = props
 
-  Meteor.call('openwhyd.profile.followers.get', profileId, limit, filter, done);
+  Meteor.call('openwhyd.profile.followers.get', profileId, document.cookie, limit, filter, done);
 })
 
 const ProfileFollowers = SearchWrapper(followersFromAPI(FollowList), 'Followers')
