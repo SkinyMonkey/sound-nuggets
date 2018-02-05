@@ -9,7 +9,9 @@ import SearchWrapper from '../../../components/SearchWrapper.jsx'
 import Donate from '../../../components/Donate.jsx'
 import Patreon from '../../../components/Patreon.jsx'
 
-import withMethodData from '../../../components/withMethodData.jsx'
+import withMethodData from '../../../components/withMethodDataRedux.jsx'
+
+import { loadTracklist } from '../../../actions/tracklist.js'
 
 const DummyContainer = (wrappedComponent) => {
   return (props) => <div className='page-container container'>
@@ -23,14 +25,16 @@ const DummyContainer = (wrappedComponent) => {
   </div>
 }
 
-const tracksFromAPI = withMethodData((props, done) => {
+const getData = (props, done) => {
   const profileId = props.match.params.profileId
   const { limit, filter } = props
 
   const cookie = document.cookie
 
   Meteor.call('openwhyd.profile.stream.get', limit, cookie, done);
-})
+}
+
+const tracksFromAPI = withMethodData(getData, loadTracklist)
 
 const DISABLED = true
 
