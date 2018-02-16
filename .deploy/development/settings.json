@@ -10,7 +10,7 @@
   "private": {
     "FACEBOOK_APP_ID": "414437012016681",
     "FACEBOOK_APP_SECRET": "04732ec561eee63d63f1cba06e1b852b",
-    "GITHUB_TOKEN": "5f78a5dc3a0059bef92dde9d4240239e03ff0439",
+    "GITHUB_TOKEN": "",
     "GITHUB_REPOSITORY": "sound-nuggets"
   }
 }
