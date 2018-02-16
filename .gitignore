@@ -34,3 +34,5 @@ scripts/.migrations
 
 .deploy/*settings.json
 .deploy/production/*settings.json
+
+mup.js
