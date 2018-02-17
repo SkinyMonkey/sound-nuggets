@@ -1,0 +1,16 @@
+{
+  "public": {
+    "FACEBOOK_APP_ID": "414437012016681",
+    "GOOGLE_ANALYTICS_ID": "UA-111404264-1",
+    "soundcloud": {
+      "CLIENT_ID": "eb257e698774349c22b0b727df0238ad"
+    },
+    "throttle": 0.8
+  },
+  "private": {
+    "FACEBOOK_APP_ID": "414437012016681",
+    "FACEBOOK_APP_SECRET": "04732ec561eee63d63f1cba06e1b852b",
+    "GITHUB_TOKEN": "5f78a5dc3a0059bef92dde9d4240239e03ff0439",
+    "GITHUB_REPOSITORY": "sound-nuggets"
+  }
+}
