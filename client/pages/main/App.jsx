@@ -7,7 +7,6 @@ import ReactGA from 'react-ga';
 import sessionActions from '../../actions/session.js'
 import withMethodData from '../../components/withMethodData.jsx'
 import Authenticated from '../../components/Authenticated.jsx'
-import CoinHive from '../../components/CoinHive.jsx'
 
 import Modal from '../../components/Modal.jsx'
 import NavBar from '../../components/NavBar.jsx'
@@ -82,7 +81,6 @@ class App extends Component {
         </Router>
         <Modal session={this.props} />
         <Player session={this.props} />
-        <CoinHive username={this.props.currentUser._id}/>
         <footer id='footer' />
       </div>
     )

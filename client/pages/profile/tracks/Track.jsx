@@ -156,7 +156,9 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const actionProps = {...modalActions,
-  ...playerActions}
+const actionProps = {
+  ...modalActions,
+  ...playerActions
+}
 
 export default connect(mapStateToProps, actionProps)(Track)
