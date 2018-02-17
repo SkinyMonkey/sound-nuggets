@@ -86,7 +86,7 @@ const NavBar = ({ match, history, session, logout }) => {
          <Search thirdPartyApis={isAuth} history={history} session={session} />
        	</Navbar.Form>
 
-        <Nav>
+        <Nav id="coinhive-nav">
           <NavItem>
             <CoinHive username={currentUser._id}/>
           </NavItem>
