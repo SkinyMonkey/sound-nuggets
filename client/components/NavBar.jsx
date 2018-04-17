@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import CoinHive from './CoinHive.jsx'
 
 import { Navbar, Nav, NavItem, MenuItem, DropdownButton, ButtonGroup, Button } from 'react-bootstrap'
 
@@ -85,12 +84,6 @@ const NavBar = ({ match, history, session, logout }) => {
 				<Navbar.Form pullLeft>
          <Search thirdPartyApis={isAuth} history={history} session={session} />
        	</Navbar.Form>
-
-        <Nav id="coinhive-nav">
-          <NavItem>
-            <CoinHive username={currentUser._id}/>
-          </NavItem>
-        </Nav>
 
         <Navbar.Form pullRight>
 
