@@ -102,6 +102,8 @@ class Track extends Component {
 
     const image = track.image || 'https://i.ytimg.com/vi/T0Jqdjbed40/mqdefault.jpg'
 
+    console.log(track)
+
     return (
       <Media.ListItem className={playingBorder}>
         <Media.Left>
@@ -140,6 +142,9 @@ class Track extends Component {
                 </p>
               </div>
             }
+            <div className='original-url'>
+              hosted @ <a href={track.url}>{track.provider}</a>
+            </div>
           </div>
         </Media.Body>
       </Media.ListItem>
