@@ -9,7 +9,7 @@ Then you can proceed to the issues and look for the `bug`, `feature` and `enhanc
 
 ### Last version
 
-The current development version is on __develop__
+The current development version is on the __develop__ branch
 
 ### To start the app locally
 
